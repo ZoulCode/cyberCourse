@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مسار الأمن السيبراني - 710 حلقة</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg3: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --green: #3fb950;
+    --blue: #58a6ff;
+    --purple: #d2a8ff;
+    --orange: #ffa657;
+    --red: #ff7b72;
+    --yellow: #e3b341;
+    --teal: #39d353;
+    --pink: #f778ba;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; }
+
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 32px 20px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+  h1 { font-size: 20px; font-weight: 600; color: var(--text); }
+  .badge { background: var(--green); color: #0d1117; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  
+  .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  input[type="search"] {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    padding: 7px 14px; border-radius: 6px; font-size: 13px; width: 280px; outline: none;
+    transition: border-color .2s;
+  }
+  input[type="search"]:focus { border-color: var(--blue); }
+  input[type="search"]::placeholder { color: var(--text2); }
+  
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .filter-btn {
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text2);
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    transition: all .15s; white-space: nowrap;
+  }
+  .filter-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .filter-btn.active { color: #0d1117; border-color: transparent; }
+
+  .stats { font-size: 12px; color: var(--text2); margin-top: 10px; }
+  .stats span { color: var(--blue); font-weight: 600; }
+
+  main { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
+
+  .season { margin-bottom: 32px; }
+  .season-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 4px; cursor: pointer;
+    transition: background .15s;
+  }
+  .season-header:hover { background: var(--bg3); }
+  .season-icon { font-size: 18px; width: 28px; text-align: center; }
+  .season-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .season-range { font-size: 12px; color: var(--text2); }
+  .season-count { font-size: 12px; background: var(--bg3); border: 1px solid var(--border); padding: 2px 8px; border-radius: 20px; color: var(--text2); }
+  .chevron { color: var(--text2); font-size: 11px; transition: transform .2s; }
+  .season-header.collapsed .chevron { transform: rotate(-90deg); }
+
+  .episodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 6px;
+    padding: 4px 0;
+  }
+  .episodes-grid.hidden { display: none; }
+
+  .ep {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 12px; border-radius: 6px;
+    border: 1px solid transparent;
+    transition: all .12s;
+    cursor: default;
+  }
+  .ep:hover { background: var(--bg2); border-color: var(--border); }
+  .ep.hidden { display: none; }
+  .ep-num {
+    font-size: 11px; font-weight: 700; color: #0d1117;
+    background: var(--text2); border-radius: 4px;
+    padding: 2px 6px; min-width: 36px; text-align: center;
+    flex-shrink: 0; margin-top: 1px;
+    font-family: 'Courier New', monospace;
+  }
+  .ep-title { font-size: 13px; color: var(--text); line-height: 1.4; }
+
+  /* Season colors */
+  .s1 .season-header { background: #0d1117; }
+  .s1 .ep-num { background: #388bfd; }
+  .s1 .season-icon::after { content: '🏗️'; }
+  .s2 .ep-num { background: #56d364; color: #0d1117; }
+  .s2 .season-icon::after { content: '🔍'; }
+  .s3 .ep-num { background: #e3b341; color: #0d1117; }
+  .s3 .season-icon::after { content: '🧠'; }
+  .s4 .ep-num { background: #58a6ff; color: #0d1117; }
+  .s4 .season-icon::after { content: '🌐'; }
+  .s5 .ep-num { background: #d2a8ff; color: #0d1117; }
+  .s5 .season-icon::after { content: '🕸️'; }
+  .s6 .ep-num { background: #ffa657; color: #0d1117; }
+  .s6 .season-icon::after { content: '🔐'; }
+  .s7 .ep-num { background: #ff7b72; color: #0d1117; }
+  .s7 .season-icon::after { content: '🦠'; }
+  .s8 .ep-num { background: #f778ba; color: #0d1117; }
+  .s8 .season-icon::after { content: '💥'; }
+  .s9 .ep-num { background: #39d353; color: #0d1117; }
+  .s9 .season-icon::after { content: '🎯'; }
+  .s10 .ep-num { background: #8b949e; color: #0d1117; }
+  .s10 .season-icon::after { content: '🔌'; }
+  .s11 .ep-num { background: #79c0ff; color: #0d1117; }
+  .s11 .season-icon::after { content: '📡'; }
+  .s12 .ep-num { background: #a5d6ff; color: #0d1117; }
+  .s12 .season-icon::after { content: '📱'; }
+  .s13 .ep-num { background: #7ee787; color: #0d1117; }
+  .s13 .season-icon::after { content: '🏭'; }
+  .s14 .ep-num { background: #63e6be; color: #0d1117; }
+  .s14 .season-icon::after { content: '☁️'; }
+  .s15 .ep-num { background: #bc8cff; color: #0d1117; }
+  .s15 .season-icon::after { content: '🤖'; }
+  .s16 .ep-num { background: #ff9a9a; color: #0d1117; }
+  .s16 .season-icon::after { content: '🌍'; }
+  .s17 .ep-num { background: #c3d3ff; color: #0d1117; }
+  .s17 .season-icon::after { content: '🛸'; }
+  .s18 .ep-num { background: #ffd966; color: #0d1117; }
+  .s18 .season-icon::after { content: '⚖️'; }
+  .s19 .ep-num { background: #98ff98; color: #0d1117; }
+  .s19 .season-icon::after { content: '🎓'; }
+
+  .no-results { text-align: center; padding: 60px 20px; color: var(--text2); font-size: 15px; display: none; }
+
+  @media (max-width: 600px) {
+    header { padding: 16px; }
+    main { padding: 16px; }
+    input[type="search"] { width: 100%; }
+    .episodes-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>🛡️ مسار الأمن السيبراني الشامل</h1>
+    <span class="badge">710 حلقة</span>
+  </div>
+  <div class="controls">
+    <input type="search" id="search" placeholder="ابحث عن أي موضوع..." oninput="doSearch()" />
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="stats">يعرض <span id="vis-count">710</span> من أصل <span>710</span> حلقة</div>
+</header>
+
+<main id="main">
+
+<!-- SEASON 1 -->
+<div class="season s1" data-season="1">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الأول — الأساسيات (Foundations)</span>
+  <span class="season-range">حلقة 1 → 35</span>
+  <span class="season-count">35 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">001</span><span class="ep-title">ما هو الأمن السيبراني؟ التاريخ والأهمية</span></div>
+<div class="ep"><span class="ep-num">002</span><span class="ep-title">CIA Triad — Confidentiality, Integrity, Availability</span></div>
+<div class="ep"><span class="ep-num">003</span><span class="ep-title">أنواع المهاجمين — Threat Actors</span></div>
+<div class="ep"><span class="ep-num">004</span><span class="ep-title">Black Hat vs White Hat vs Grey Hat</span></div>
+<div class="ep"><span class="ep-num">005</span><span class="ep-title">OSI Model — طبقات الشبكة السبعة</span></div>
+<div class="ep"><span class="ep-num">006</span><span class="ep-title">TCP/IP Model — كيف يعمل الإنترنت؟</span></div>
+<div class="ep"><span class="ep-num">007</span><span class="ep-title">IP Addressing & Subnetting</span></div>
+<div class="ep"><span class="ep-num">008</span><span class="ep-title">DNS — كيف يعمل نظام أسماء النطاقات؟</span></div>
+<div class="ep"><span class="ep-num">009</span><span class="ep-title">HTTP/HTTPS — كيف يعمل البروتوكول؟</span></div>
+<div class="ep"><span class="ep-num">010</span><span class="ep-title">مبادئ التشفير — Cryptography Basics</span></div>
+<div class="ep"><span class="ep-num">011</span><span class="ep-title">Symmetric Encryption — AES, DES</span></div>
+<div class="ep"><span class="ep-num">012</span><span class="ep-title">Asymmetric Encryption — PKI, RSA, ECC</span></div>
+<div class="ep"><span class="ep-num">013</span><span class="ep-title">Hashing — MD5, SHA-1, SHA-256</span></div>
+<div class="ep"><span class="ep-num">014</span><span class="ep-title">Digital Signatures & Certificates</span></div>
+<div class="ep"><span class="ep-num">015</span><span class="ep-title">Linux Basics لمحترفي الأمن</span></div>
+<div class="ep"><span class="ep-num">016</span><span class="ep-title">Windows Basics لمحترفي الأمن</span></div>
+<div class="ep"><span class="ep-num">017</span><span class="ep-title">Command Line Essentials — Linux Terminal</span></div>
+<div class="ep"><span class="ep-num">018</span><span class="ep-title">PowerShell for Security</span></div>
+<div class="ep"><span class="ep-num">019</span><span class="ep-title">إعداد بيئة التجارب — Virtual Lab Setup</span></div>
+<div class="ep"><span class="ep-num">020</span><span class="ep-title">VPN & Proxies — كيف تعمل وكيف تُخترق؟</span></div>
+<div class="ep"><span class="ep-num">021</span><span class="ep-title">Firewalls — أنواعها وكيف تعمل؟</span></div>
+<div class="ep"><span class="ep-num">022</span><span class="ep-title">IDS/IPS — أنظمة الكشف عن الاختراق</span></div>
+<div class="ep"><span class="ep-num">023</span><span class="ep-title">SIEM Systems — المركز العصبي للأمن</span></div>
+<div class="ep"><span class="ep-num">024</span><span class="ep-title">Authentication Methods — طرق التحقق من الهوية</span></div>
+<div class="ep"><span class="ep-num">025</span><span class="ep-title">Authorization & Access Control — RBAC, DAC</span></div>
+<div class="ep"><span class="ep-num">026</span><span class="ep-title">MFA — Multi-Factor Authentication</span></div>
+<div class="ep"><span class="ep-num">027</span><span class="ep-title">Password Security — كيف يتم تخزين كلمات المرور؟</span></div>
+<div class="ep"><span class="ep-num">028</span><span class="ep-title">PKI Infrastructure — بنية المفاتيح العامة</span></div>
+<div class="ep"><span class="ep-num">029</span><span class="ep-title">Zero Trust Architecture</span></div>
+<div class="ep"><span class="ep-num">030</span><span class="ep-title">Defense in Depth — الدفاع متعدد الطبقات</span></div>
+<div class="ep"><span class="ep-num">031</span><span class="ep-title">Security Frameworks — NIST, ISO 27001</span></div>
+<div class="ep"><span class="ep-num">032</span><span class="ep-title">OWASP Top 10 — مقدمة شاملة</span></div>
+<div class="ep"><span class="ep-num">033</span><span class="ep-title">CVE & CVSS Scoring System</span></div>
+<div class="ep"><span class="ep-num">034</span><span class="ep-title">الفرق بين Vulnerability و Exploit</span></div>
+<div class="ep"><span class="ep-num">035</span><span class="ep-title">Penetration Testing Methodology — منهجية الاختبار</span></div>
+</div></div>
+
+<!-- SEASON 2 -->
+<div class="season s2" data-season="2">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الثاني — الاستطلاع (Reconnaissance & OSINT)</span>
+  <span class="season-range">حلقة 36 → 60</span>
+  <span class="season-count">25 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">036</span><span class="ep-title">Passive vs Active Reconnaissance</span></div>
+<div class="ep"><span class="ep-num">037</span><span class="ep-title">OSINT — Open Source Intelligence مقدمة</span></div>
+<div class="ep"><span class="ep-num">038</span><span class="ep-title">Google Dorking — محرك البحث كسلاح</span></div>
+<div class="ep"><span class="ep-num">039</span><span class="ep-title">Shodan — محرك بحث القراصنة</span></div>
+<div class="ep"><span class="ep-num">040</span><span class="ep-title">DNS Enumeration</span></div>
+<div class="ep"><span class="ep-num">041</span><span class="ep-title">WHOIS Lookup & Domain Research</span></div>
+<div class="ep"><span class="ep-num">042</span><span class="ep-title">Email Harvesting Techniques</span></div>
+<div class="ep"><span class="ep-num">043</span><span class="ep-title">LinkedIn & Social Media Recon</span></div>
+<div class="ep"><span class="ep-num">044</span><span class="ep-title">Maltego — رسم خرائط الهدف</span></div>
+<div class="ep"><span class="ep-num">045</span><span class="ep-title">Recon-ng Framework</span></div>
+<div class="ep"><span class="ep-num">046</span><span class="ep-title">theHarvester Tool</span></div>
+<div class="ep"><span class="ep-num">047</span><span class="ep-title">Subdomain Enumeration — Subfinder, Amass</span></div>
+<div class="ep"><span class="ep-num">048</span><span class="ep-title">Port Scanning — Nmap Basics</span></div>
+<div class="ep"><span class="ep-num">049</span><span class="ep-title">Nmap Advanced Techniques</span></div>
+<div class="ep"><span class="ep-num">050</span><span class="ep-title">Banner Grabbing & Service Detection</span></div>
+<div class="ep"><span class="ep-num">051</span><span class="ep-title">OS Fingerprinting</span></div>
+<div class="ep"><span class="ep-num">052</span><span class="ep-title">Vulnerability Scanning — Nessus</span></div>
+<div class="ep"><span class="ep-num">053</span><span class="ep-title">Vulnerability Scanning — OpenVAS</span></div>
+<div class="ep"><span class="ep-num">054</span><span class="ep-title">Web Application Fingerprinting</span></div>
+<div class="ep"><span class="ep-num">055</span><span class="ep-title">CMS Detection — WordPress, Joomla, Drupal</span></div>
+<div class="ep"><span class="ep-num">056</span><span class="ep-title">Cloud Asset Discovery</span></div>
+<div class="ep"><span class="ep-num">057</span><span class="ep-title">Attack Surface Mapping</span></div>
+<div class="ep"><span class="ep-num">058</span><span class="ep-title">Network Topology Mapping</span></div>
+<div class="ep"><span class="ep-num">059</span><span class="ep-title">Censys & Fofa Recon Tools</span></div>
+<div class="ep"><span class="ep-num">060</span><span class="ep-title">OSINT Case Study — Recon عملي كامل</span></div>
+</div></div>
+
+<!-- SEASON 3 -->
+<div class="season s3" data-season="3">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الثالث — الهندسة الاجتماعية (Social Engineering)</span>
+  <span class="season-range">حلقة 61 → 90</span>
+  <span class="season-count">30 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">061</span><span class="ep-title">Social Engineering — المقدمة والنفسية</span></div>
+<div class="ep"><span class="ep-num">062</span><span class="ep-title">Psychology of Manipulation — علم النفس للهاكرز</span></div>
+<div class="ep"><span class="ep-num">063</span><span class="ep-title">Authority & Urgency Tactics</span></div>
+<div class="ep"><span class="ep-num">064</span><span class="ep-title">Pretexting — اختراع القصة</span></div>
+<div class="ep"><span class="ep-num">065</span><span class="ep-title">Phishing — المقدمة والأنواع</span></div>
+<div class="ep"><span class="ep-num">066</span><span class="ep-title">Phishing Email Anatomy — تشريح البريد المزيف</span></div>
+<div class="ep"><span class="ep-num">067</span><span class="ep-title">Spear Phishing — الاستهداف الدقيق</span></div>
+<div class="ep"><span class="ep-num">068</span><span class="ep-title">Whaling — استهداف المديرين التنفيذيين</span></div>
+<div class="ep"><span class="ep-num">069</span><span class="ep-title">Vishing — Voice Phishing الاحتيال الصوتي</span></div>
+<div class="ep"><span class="ep-num">070</span><span class="ep-title">Smishing — SMS Phishing</span></div>
+<div class="ep"><span class="ep-num">071</span><span class="ep-title">Quishing — QR Code Phishing</span></div>
+<div class="ep"><span class="ep-num">072</span><span class="ep-title">Clone Phishing</span></div>
+<div class="ep"><span class="ep-num">073</span><span class="ep-title">Business Email Compromise — BEC</span></div>
+<div class="ep"><span class="ep-num">074</span><span class="ep-title">CEO Fraud — احتيال المدير التنفيذي</span></div>
+<div class="ep"><span class="ep-num">075</span><span class="ep-title">Watering Hole Attack</span></div>
+<div class="ep"><span class="ep-num">076</span><span class="ep-title">Baiting — الطُعم الرقمي والمادي</span></div>
+<div class="ep"><span class="ep-num">077</span><span class="ep-title">Tailgating & Piggybacking</span></div>
+<div class="ep"><span class="ep-num">078</span><span class="ep-title">Shoulder Surfing</span></div>
+<div class="ep"><span class="ep-num">079</span><span class="ep-title">Dumpster Diving — تفتيش القمامة</span></div>
+<div class="ep"><span class="ep-num">080</span><span class="ep-title">Typosquatting — النطاقات المزيفة</span></div>
+<div class="ep"><span class="ep-num">081</span><span class="ep-title">Homograph Attack — IDN Spoofing</span></div>
+<div class="ep"><span class="ep-num">082</span><span class="ep-title">Angler Phishing — استهداف السوشيال ميديا</span></div>
+<div class="ep"><span class="ep-num">083</span><span class="ep-title">Honey Trap — فخ العلاقات</span></div>
+<div class="ep"><span class="ep-num">084</span><span class="ep-title">Deepfake Social Engineering</span></div>
+<div class="ep"><span class="ep-num">085</span><span class="ep-title">Evil Twin Attack — نقطة الاتصال المزيفة</span></div>
+<div class="ep"><span class="ep-num">086</span><span class="ep-title">Insider Threat — التهديد الداخلي</span></div>
+<div class="ep"><span class="ep-num">087</span><span class="ep-title">Fake Job Offer Attacks — Lazarus Group Style</span></div>
+<div class="ep"><span class="ep-num">088</span><span class="ep-title">Cognitive Biases الهاكرز يستغلونها</span></div>
+<div class="ep"><span class="ep-num">089</span><span class="ep-title">كيف تحمي نفسك من Social Engineering؟</span></div>
+<div class="ep"><span class="ep-num">090</span><span class="ep-title">Security Awareness Training — كيف تدرّب فريقك؟</span></div>
+</div></div>
+
+<!-- SEASON 4 -->
+<div class="season s4" data-season="4">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الرابع — هجمات الشبكات (Network Attacks)</span>
+  <span class="season-range">حلقة 91 → 145</span>
+  <span class="season-count">55 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">091</span><span class="ep-title">Network Attacks — المقدمة الشاملة</span></div>
+<div class="ep"><span class="ep-num">092</span><span class="ep-title">Man-in-the-Middle (MITM) — النظرية</span></div>
+<div class="ep"><span class="ep-num">093</span><span class="ep-title">ARP Spoofing / ARP Poisoning</span></div>
+<div class="ep"><span class="ep-num">094</span><span class="ep-title">DNS Spoofing / DNS Cache Poisoning</span></div>
+<div class="ep"><span class="ep-num">095</span><span class="ep-title">SSL Stripping Attack</span></div>
+<div class="ep"><span class="ep-num">096</span><span class="ep-title">BGP Hijacking — اختطاف مسارات الإنترنت</span></div>
+<div class="ep"><span class="ep-num">097</span><span class="ep-title">IP Spoofing</span></div>
+<div class="ep"><span class="ep-num">098</span><span class="ep-title">MAC Spoofing</span></div>
+<div class="ep"><span class="ep-num">099</span><span class="ep-title">VLAN Hopping Attack</span></div>
+<div class="ep"><span class="ep-num">100</span><span class="ep-title">STP Attack — Spanning Tree Protocol</span></div>
+<div class="ep"><span class="ep-num">101</span><span class="ep-title">DHCP Starvation & DHCP Spoofing</span></div>
+<div class="ep"><span class="ep-num">102</span><span class="ep-title">ICMP Redirect Attack</span></div>
+<div class="ep"><span class="ep-num">103</span><span class="ep-title">SSL/TLS Downgrade Attack</span></div>
+<div class="ep"><span class="ep-num">104</span><span class="ep-title">BEAST Attack</span></div>
+<div class="ep"><span class="ep-num">105</span><span class="ep-title">POODLE Attack</span></div>
+<div class="ep"><span class="ep-num">106</span><span class="ep-title">DROWN Attack</span></div>
+<div class="ep"><span class="ep-num">107</span><span class="ep-title">CRIME & BREACH Attacks</span></div>
+<div class="ep"><span class="ep-num">108</span><span class="ep-title">FREAK Attack</span></div>
+<div class="ep"><span class="ep-num">109</span><span class="ep-title">Logjam Attack</span></div>
+<div class="ep"><span class="ep-num">110</span><span class="ep-title">Heartbleed — أكبر ثغرة في تاريخ SSL</span></div>
+<div class="ep"><span class="ep-num">111</span><span class="ep-title">Certificate Attacks & TLS Renegotiation</span></div>
+<div class="ep"><span class="ep-num">112</span><span class="ep-title">Network Sniffing — Wireshark عملي</span></div>
+<div class="ep"><span class="ep-num">113</span><span class="ep-title">MITM Attack عملي — Ettercap, Bettercap</span></div>
+<div class="ep"><span class="ep-num">114</span><span class="ep-title">Smurf & Fraggle Attacks</span></div>
+<div class="ep"><span class="ep-num">115</span><span class="ep-title">Teardrop & Ping of Death</span></div>
+<div class="ep"><span class="ep-num">116</span><span class="ep-title">Land Attack & Christmas Tree Attack</span></div>
+<div class="ep"><span class="ep-num">117</span><span class="ep-title">DoS — مقدمة ونظرية</span></div>
+<div class="ep"><span class="ep-num">118</span><span class="ep-title">DDoS — كيف يعمل الهجوم الموزع؟</span></div>
+<div class="ep"><span class="ep-num">119</span><span class="ep-title">UDP Flood & ICMP Flood</span></div>
+<div class="ep"><span class="ep-num">120</span><span class="ep-title">SYN Flood Attack</span></div>
+<div class="ep"><span class="ep-num">121</span><span class="ep-title">ACK Flood & RST Flood</span></div>
+<div class="ep"><span class="ep-num">122</span><span class="ep-title">HTTP Flood Attack</span></div>
+<div class="ep"><span class="ep-num">123</span><span class="ep-title">Slowloris Attack</span></div>
+<div class="ep"><span class="ep-num">124</span><span class="ep-title">RUDY Attack — R-U-Dead-Yet</span></div>
+<div class="ep"><span class="ep-num">125</span><span class="ep-title">DNS Amplification Attack</span></div>
+<div class="ep"><span class="ep-num">126</span><span class="ep-title">NTP Amplification Attack</span></div>
+<div class="ep"><span class="ep-num">127</span><span class="ep-title">Memcached DDoS Attack</span></div>
+<div class="ep"><span class="ep-num">128</span><span class="ep-title">SSDP Amplification</span></div>
+<div class="ep"><span class="ep-num">129</span><span class="ep-title">Reflection Attacks</span></div>
+<div class="ep"><span class="ep-num">130</span><span class="ep-title">Botnet-based DDoS</span></div>
+<div class="ep"><span class="ep-num">131</span><span class="ep-title">Layer 7 DDoS</span></div>
+<div class="ep"><span class="ep-num">132</span><span class="ep-title">ReDoS — Regex Denial of Service</span></div>
+<div class="ep"><span class="ep-num">133</span><span class="ep-title">XML Bomb / Billion Laughs / Zip Bomb</span></div>
+<div class="ep"><span class="ep-num">134</span><span class="ep-title">Firewall Evasion Techniques</span></div>
+<div class="ep"><span class="ep-num">135</span><span class="ep-title">IDS/IPS Evasion Techniques</span></div>
+<div class="ep"><span class="ep-num">136</span><span class="ep-title">DNS Tunneling</span></div>
+<div class="ep"><span class="ep-num">137</span><span class="ep-title">ICMP Tunneling</span></div>
+<div class="ep"><span class="ep-num">138</span><span class="ep-title">HTTP Tunneling</span></div>
+<div class="ep"><span class="ep-num">139</span><span class="ep-title">Tor Network — الاستخدام والاختراق</span></div>
+<div class="ep"><span class="ep-num">140</span><span class="ep-title">VPN Attack Vectors</span></div>
+<div class="ep"><span class="ep-num">141</span><span class="ep-title">Network Packet Crafting — Scapy</span></div>
+<div class="ep"><span class="ep-num">142</span><span class="ep-title">BGP Route Injection</span></div>
+<div class="ep"><span class="ep-num">143</span><span class="ep-title">Proxy Chains & Anonymization</span></div>
+<div class="ep"><span class="ep-num">144</span><span class="ep-title">DDoS Mitigation — Cloudflare, CDN Defense</span></div>
+<div class="ep"><span class="ep-num">145</span><span class="ep-title">Network Security Defense — الدفاع الشامل</span></div>
+</div></div>
+
+<!-- SEASON 5 -->
+<div class="season s5" data-season="5">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الخامس — أمن تطبيقات الويب (Web Application Security)</span>
+  <span class="season-range">حلقة 146 → 255</span>
+  <span class="season-count">110 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">146</span><span class="ep-title">Web Security — المقدمة الشاملة</span></div>
+<div class="ep"><span class="ep-num">147</span><span class="ep-title">HTTP Deep Dive — كيف تعمل طلبات الويب؟</span></div>
+<div class="ep"><span class="ep-num">148</span><span class="ep-title">Burp Suite — الأداة الأساسية</span></div>
+<div class="ep"><span class="ep-num">149</span><span class="ep-title">OWASP Top 10 — شرح تفصيلي لكل ثغرة</span></div>
+<div class="ep"><span class="ep-num">150</span><span class="ep-title">SQL Injection — النظرية والمبادئ</span></div>
+<div class="ep"><span class="ep-num">151</span><span class="ep-title">SQL Injection — Error-based</span></div>
+<div class="ep"><span class="ep-num">152</span><span class="ep-title">SQL Injection — Union-based</span></div>
+<div class="ep"><span class="ep-num">153</span><span class="ep-title">SQL Injection — Blind Boolean-based</span></div>
+<div class="ep"><span class="ep-num">154</span><span class="ep-title">SQL Injection — Time-based Blind</span></div>
+<div class="ep"><span class="ep-num">155</span><span class="ep-title">SQL Injection — Out-of-Band</span></div>
+<div class="ep"><span class="ep-num">156</span><span class="ep-title">Second-Order SQL Injection</span></div>
+<div class="ep"><span class="ep-num">157</span><span class="ep-title">SQLmap — الأداة الآلية</span></div>
+<div class="ep"><span class="ep-num">158</span><span class="ep-title">SQL Injection إلى OS Shell</span></div>
+<div class="ep"><span class="ep-num">159</span><span class="ep-title">NoSQL Injection — MongoDB</span></div>
+<div class="ep"><span class="ep-num">160</span><span class="ep-title">XSS — Cross-Site Scripting مقدمة</span></div>
+<div class="ep"><span class="ep-num">161</span><span class="ep-title">Reflected XSS</span></div>
+<div class="ep"><span class="ep-num">162</span><span class="ep-title">Stored XSS</span></div>
+<div class="ep"><span class="ep-num">163</span><span class="ep-title">DOM-based XSS</span></div>
+<div class="ep"><span class="ep-num">164</span><span class="ep-title">XSS Exploitation — Cookie Stealing</span></div>
+<div class="ep"><span class="ep-num">165</span><span class="ep-title">XSS إلى Account Takeover</span></div>
+<div class="ep"><span class="ep-num">166</span><span class="ep-title">Stored XSS Worm</span></div>
+<div class="ep"><span class="ep-num">167</span><span class="ep-title">CSRF — Cross-Site Request Forgery</span></div>
+<div class="ep"><span class="ep-num">168</span><span class="ep-title">CSRF Bypass Techniques</span></div>
+<div class="ep"><span class="ep-num">169</span><span class="ep-title">SSRF — Server-Side Request Forgery</span></div>
+<div class="ep"><span class="ep-num">170</span><span class="ep-title">SSRF — Cloud Metadata Attacks</span></div>
+<div class="ep"><span class="ep-num">171</span><span class="ep-title">Blind SSRF</span></div>
+<div class="ep"><span class="ep-num">172</span><span class="ep-title">SSRF إلى RCE</span></div>
+<div class="ep"><span class="ep-num">173</span><span class="ep-title">XXE — XML External Entity</span></div>
+<div class="ep"><span class="ep-num">174</span><span class="ep-title">Blind XXE</span></div>
+<div class="ep"><span class="ep-num">175</span><span class="ep-title">XXE إلى SSRF</span></div>
+<div class="ep"><span class="ep-num">176</span><span class="ep-title">IDOR — Insecure Direct Object Reference</span></div>
+<div class="ep"><span class="ep-num">177</span><span class="ep-title">IDOR Chaining — ربط الثغرات</span></div>
+<div class="ep"><span class="ep-num">178</span><span class="ep-title">Path Traversal / Directory Traversal</span></div>
+<div class="ep"><span class="ep-num">179</span><span class="ep-title">Open Redirect</span></div>
+<div class="ep"><span class="ep-num">180</span><span class="ep-title">HTTP Request Smuggling</span></div>
+<div class="ep"><span class="ep-num">181</span><span class="ep-title">HTTP Response Splitting</span></div>
+<div class="ep"><span class="ep-num">182</span><span class="ep-title">Clickjacking</span></div>
+<div class="ep"><span class="ep-num">183</span><span class="ep-title">CORS Misconfiguration</span></div>
+<div class="ep"><span class="ep-num">184</span><span class="ep-title">GraphQL Security & Injection</span></div>
+<div class="ep"><span class="ep-num">185</span><span class="ep-title">GraphQL Introspection & Batching Attack</span></div>
+<div class="ep"><span class="ep-num">186</span><span class="ep-title">LDAP Injection</span></div>
+<div class="ep"><span class="ep-num">187</span><span class="ep-title">XPath Injection</span></div>
+<div class="ep"><span class="ep-num">188</span><span class="ep-title">Template Injection — SSTI مقدمة</span></div>
+<div class="ep"><span class="ep-num">189</span><span class="ep-title">SSTI عملي — Jinja2, Twig, Freemarker</span></div>
+<div class="ep"><span class="ep-num">190</span><span class="ep-title">Deserialization Attacks</span></div>
+<div class="ep"><span class="ep-num">191</span><span class="ep-title">Deserialization إلى RCE</span></div>
+<div class="ep"><span class="ep-num">192</span><span class="ep-title">JWT Attacks — None Algorithm</span></div>
+<div class="ep"><span class="ep-num">193</span><span class="ep-title">JWT — Algorithm Confusion Attack</span></div>
+<div class="ep"><span class="ep-num">194</span><span class="ep-title">JWT — Weak Secret Attacks</span></div>
+<div class="ep"><span class="ep-num">195</span><span class="ep-title">OAuth Vulnerabilities</span></div>
+<div class="ep"><span class="ep-num">196</span><span class="ep-title">OAuth إلى Account Takeover</span></div>
+<div class="ep"><span class="ep-num">197</span><span class="ep-title">Session Fixation</span></div>
+<div class="ep"><span class="ep-num">198</span><span class="ep-title">Session Hijacking</span></div>
+<div class="ep"><span class="ep-num">199</span><span class="ep-title">Cookie Poisoning & Security</span></div>
+<div class="ep"><span class="ep-num">200</span><span class="ep-title">Cache Poisoning</span></div>
+<div class="ep"><span class="ep-num">201</span><span class="ep-title">Web Cache Deception</span></div>
+<div class="ep"><span class="ep-num">202</span><span class="ep-title">Mass Assignment Vulnerability</span></div>
+<div class="ep"><span class="ep-num">203</span><span class="ep-title">Business Logic Vulnerabilities</span></div>
+<div class="ep"><span class="ep-num">204</span><span class="ep-title">Race Conditions in Web Apps</span></div>
+<div class="ep"><span class="ep-num">205</span><span class="ep-title">Prototype Pollution — JavaScript</span></div>
+<div class="ep"><span class="ep-num">206</span><span class="ep-title">Prototype Pollution إلى RCE</span></div>
+<div class="ep"><span class="ep-num">207</span><span class="ep-title">Subdomain Takeover</span></div>
+<div class="ep"><span class="ep-num">208</span><span class="ep-title">DNS Rebinding</span></div>
+<div class="ep"><span class="ep-num">209</span><span class="ep-title">WebSocket Attacks</span></div>
+<div class="ep"><span class="ep-num">210</span><span class="ep-title">API Security — OWASP API Top 10</span></div>
+<div class="ep"><span class="ep-num">211</span><span class="ep-title">Broken Object Level Authorization</span></div>
+<div class="ep"><span class="ep-num">212</span><span class="ep-title">Broken API Authentication</span></div>
+<div class="ep"><span class="ep-num">213</span><span class="ep-title">Excessive Data Exposure — API</span></div>
+<div class="ep"><span class="ep-num">214</span><span class="ep-title">API Rate Limit Bypass</span></div>
+<div class="ep"><span class="ep-num">215</span><span class="ep-title">File Upload Vulnerabilities</span></div>
+<div class="ep"><span class="ep-num">216</span><span class="ep-title">RFI — Remote File Inclusion</span></div>
+<div class="ep"><span class="ep-num">217</span><span class="ep-title">LFI — Local File Inclusion</span></div>
+<div class="ep"><span class="ep-num">218</span><span class="ep-title">LFI إلى RCE</span></div>
+<div class="ep"><span class="ep-num">219</span><span class="ep-title">Command Injection</span></div>
+<div class="ep"><span class="ep-num">220</span><span class="ep-title">Code Injection</span></div>
+<div class="ep"><span class="ep-num">221</span><span class="ep-title">Log Injection & CRLF Injection</span></div>
+<div class="ep"><span class="ep-num">222</span><span class="ep-title">Header Injection</span></div>
+<div class="ep"><span class="ep-num">223</span><span class="ep-title">WAF Bypass Techniques</span></div>
+<div class="ep"><span class="ep-num">224</span><span class="ep-title">2FA Bypass Techniques</span></div>
+<div class="ep"><span class="ep-num">225</span><span class="ep-title">Password Reset Vulnerabilities</span></div>
+<div class="ep"><span class="ep-num">226</span><span class="ep-title">Authentication Bypass Techniques</span></div>
+<div class="ep"><span class="ep-num">227</span><span class="ep-title">WordPress Security & Attacks</span></div>
+<div class="ep"><span class="ep-num">228</span><span class="ep-title">CMS Vulnerabilities — Joomla, Drupal</span></div>
+<div class="ep"><span class="ep-num">229</span><span class="ep-title">Directory Enumeration — Gobuster, Dirb</span></div>
+<div class="ep"><span class="ep-num">230</span><span class="ep-title">Parameter Tampering & HTTP Method Abuse</span></div>
+<div class="ep"><span class="ep-num">231</span><span class="ep-title">Vulnerability Chaining — Bug Chain</span></div>
+<div class="ep"><span class="ep-num">232</span><span class="ep-title">Security Headers Analysis & CSP</span></div>
+<div class="ep"><span class="ep-num">233</span><span class="ep-title">Secure Coding Practices</span></div>
+<div class="ep"><span class="ep-num">234</span><span class="ep-title">Input Validation & Parameterized Queries</span></div>
+<div class="ep"><span class="ep-num">235</span><span class="ep-title">Security Testing in SDLC</span></div>
+<div class="ep"><span class="ep-num">236</span><span class="ep-title">Source Code Review for Security</span></div>
+<div class="ep"><span class="ep-num">237</span><span class="ep-title">Web App Penetration Testing Report</span></div>
+<div class="ep"><span class="ep-num">238</span><span class="ep-title">Bug Bounty — كيف تبدأ؟</span></div>
+<div class="ep"><span class="ep-num">239</span><span class="ep-title">Bug Bounty Platforms — HackerOne, Bugcrowd</span></div>
+<div class="ep"><span class="ep-num">240</span><span class="ep-title">Writing Bug Bounty Reports</span></div>
+<div class="ep"><span class="ep-num">241</span><span class="ep-title">API Gateway Bypass</span></div>
+<div class="ep"><span class="ep-num">242</span><span class="ep-title">Microservices Attack Patterns</span></div>
+<div class="ep"><span class="ep-num">243</span><span class="ep-title">GraphQL Depth & Complexity Attacks</span></div>
+<div class="ep"><span class="ep-num">244</span><span class="ep-title">Information Disclosure via Error Messages</span></div>
+<div class="ep"><span class="ep-num">245</span><span class="ep-title">HTTP Request Smuggling عملي</span></div>
+<div class="ep"><span class="ep-num">246</span><span class="ep-title">Cache Poisoning عملي</span></div>
+<div class="ep"><span class="ep-num">247</span><span class="ep-title">Insecure Deserialization — Java Gadget Chains</span></div>
+<div class="ep"><span class="ep-num">248</span><span class="ep-title">XSS via PDF Generation</span></div>
+<div class="ep"><span class="ep-num">249</span><span class="ep-title">Web Security Case Study — Real Breach</span></div>
+<div class="ep"><span class="ep-num">250</span><span class="ep-title">Web Security — الدفاع الشامل والخلاصة</span></div>
+<div class="ep"><span class="ep-num">251</span><span class="ep-title">Clickjacking عملي</span></div>
+<div class="ep"><span class="ep-num">252</span><span class="ep-title">DOM Clobbering</span></div>
+<div class="ep"><span class="ep-num">253</span><span class="ep-title">CSS Injection</span></div>
+<div class="ep"><span class="ep-num">254</span><span class="ep-title">JSONP Hijacking</span></div>
+<div class="ep"><span class="ep-num">255</span><span class="ep-title">PostMessage Vulnerabilities</span></div>
+</div></div>
+
+<!-- SEASON 6 -->
+<div class="season s6" data-season="6">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم السادس — هجمات التشفير (Cryptographic Attacks)</span>
+  <span class="season-range">حلقة 256 → 285</span>
+  <span class="season-count">30 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">256</span><span class="ep-title">Cryptographic Attacks — المقدمة</span></div>
+<div class="ep"><span class="ep-num">257</span><span class="ep-title">Brute Force Attack</span></div>
+<div class="ep"><span class="ep-num">258</span><span class="ep-title">Dictionary Attack</span></div>
+<div class="ep"><span class="ep-num">259</span><span class="ep-title">Rainbow Table Attack</span></div>
+<div class="ep"><span class="ep-num">260</span><span class="ep-title">Birthday Attack</span></div>
+<div class="ep"><span class="ep-num">261</span><span class="ep-title">Collision Attack</span></div>
+<div class="ep"><span class="ep-num">262</span><span class="ep-title">Preimage Attack</span></div>
+<div class="ep"><span class="ep-num">263</span><span class="ep-title">Padding Oracle Attack</span></div>
+<div class="ep"><span class="ep-num">264</span><span class="ep-title">Timing Attack — Side-channel</span></div>
+<div class="ep"><span class="ep-num">265</span><span class="ep-title">Meet-in-the-Middle Attack</span></div>
+<div class="ep"><span class="ep-num">266</span><span class="ep-title">Chosen Plaintext & Chosen Ciphertext Attack</span></div>
+<div class="ep"><span class="ep-num">267</span><span class="ep-title">Known Plaintext & Ciphertext-Only Attack</span></div>
+<div class="ep"><span class="ep-num">268</span><span class="ep-title">Related Key Attack</span></div>
+<div class="ep"><span class="ep-num">269</span><span class="ep-title">Differential Cryptanalysis</span></div>
+<div class="ep"><span class="ep-num">270</span><span class="ep-title">Linear Cryptanalysis</span></div>
+<div class="ep"><span class="ep-num">271</span><span class="ep-title">Weak IV Attack — WEP Cracking</span></div>
+<div class="ep"><span class="ep-num">272</span><span class="ep-title">PRNG Attacks — Weak Random Number Generation</span></div>
+<div class="ep"><span class="ep-num">273</span><span class="ep-title">Key Reuse & Nonce Reuse Attack</span></div>
+<div class="ep"><span class="ep-num">274</span><span class="ep-title">Length Extension Attack</span></div>
+<div class="ep"><span class="ep-num">275</span><span class="ep-title">Hash Length Extension</span></div>
+<div class="ep"><span class="ep-num">276</span><span class="ep-title">Password Cracking — Hashcat</span></div>
+<div class="ep"><span class="ep-num">277</span><span class="ep-title">Password Cracking — John the Ripper</span></div>
+<div class="ep"><span class="ep-num">278</span><span class="ep-title">Salted Hash Attacks</span></div>
+<div class="ep"><span class="ep-num">279</span><span class="ep-title">Credential Stuffing Attack</span></div>
+<div class="ep"><span class="ep-num">280</span><span class="ep-title">Password Spraying Attack</span></div>
+<div class="ep"><span class="ep-num">281</span><span class="ep-title">WPA2 vs WPA3 — الفروق الأمنية</span></div>
+<div class="ep"><span class="ep-num">282</span><span class="ep-title">PMKID Attack</span></div>
+<div class="ep"><span class="ep-num">283</span><span class="ep-title">RSA Common Modulus Attack</span></div>
+<div class="ep"><span class="ep-num">284</span><span class="ep-title">Elliptic Curve Cryptography Weaknesses</span></div>
+<div class="ep"><span class="ep-num">285</span><span class="ep-title">Cryptographic Defense Strategies</span></div>
+</div></div>
+
+<!-- SEASON 7 -->
+<div class="season s7" data-season="7">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم السابع — البرمجيات الخبيثة (Malware)</span>
+  <span class="season-range">حلقة 286 → 345</span>
+  <span class="season-count">60 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">286</span><span class="ep-title">Malware — المقدمة والتاريخ</span></div>
+<div class="ep"><span class="ep-num">287</span><span class="ep-title">Virus — كيف يعمل؟</span></div>
+<div class="ep"><span class="ep-num">288</span><span class="ep-title">Worm — كيف ينتشر؟</span></div>
+<div class="ep"><span class="ep-num">289</span><span class="ep-title">Trojan Horse</span></div>
+<div class="ep"><span class="ep-num">290</span><span class="ep-title">Backdoor</span></div>
+<div class="ep"><span class="ep-num">291</span><span class="ep-title">RAT — Remote Access Trojan</span></div>
+<div class="ep"><span class="ep-num">292</span><span class="ep-title">Spyware</span></div>
+<div class="ep"><span class="ep-num">293</span><span class="ep-title">Adware</span></div>
+<div class="ep"><span class="ep-num">294</span><span class="ep-title">Keylogger</span></div>
+<div class="ep"><span class="ep-num">295</span><span class="ep-title">Rootkit — User-mode</span></div>
+<div class="ep"><span class="ep-num">296</span><span class="ep-title">Rootkit — Kernel-mode</span></div>
+<div class="ep"><span class="ep-num">297</span><span class="ep-title">Bootkit</span></div>
+<div class="ep"><span class="ep-num">298</span><span class="ep-title">Ransomware — كيف يعمل؟ المقدمة</span></div>
+<div class="ep"><span class="ep-num">299</span><span class="ep-title">Crypto Ransomware</span></div>
+<div class="ep"><span class="ep-num">300</span><span class="ep-title">Locker Ransomware</span></div>
+<div class="ep"><span class="ep-num">301</span><span class="ep-title">Ransomware as a Service — RaaS</span></div>
+<div class="ep"><span class="ep-num">302</span><span class="ep-title">WannaCry — أكبر هجوم فدية في التاريخ</span></div>
+<div class="ep"><span class="ep-num">303</span><span class="ep-title">NotPetya & Petya Case Study</span></div>
+<div class="ep"><span class="ep-num">304</span><span class="ep-title">Botnet Architecture</span></div>
+<div class="ep"><span class="ep-num">305</span><span class="ep-title">Botnet C2 Communication</span></div>
+<div class="ep"><span class="ep-num">306</span><span class="ep-title">Fileless Malware</span></div>
+<div class="ep"><span class="ep-num">307</span><span class="ep-title">Polymorphic Malware</span></div>
+<div class="ep"><span class="ep-num">308</span><span class="ep-title">Metamorphic Malware</span></div>
+<div class="ep"><span class="ep-num">309</span><span class="ep-title">Logic Bomb & Time Bomb</span></div>
+<div class="ep"><span class="ep-num">310</span><span class="ep-title">Dropper & Downloader</span></div>
+<div class="ep"><span class="ep-num">311</span><span class="ep-title">Stager & Beacon — C2 Communication</span></div>
+<div class="ep"><span class="ep-num">312</span><span class="ep-title">Cryptojacker</span></div>
+<div class="ep"><span class="ep-num">313</span><span class="ep-title">Wiper Malware</span></div>
+<div class="ep"><span class="ep-num">314</span><span class="ep-title">Steganographic Malware</span></div>
+<div class="ep"><span class="ep-num">315</span><span class="ep-title">Mobile Malware — Android</span></div>
+<div class="ep"><span class="ep-num">316</span><span class="ep-title">Mobile Malware — iOS</span></div>
+<div class="ep"><span class="ep-num">317</span><span class="ep-title">Macro Malware — Office Documents</span></div>
+<div class="ep"><span class="ep-num">318</span><span class="ep-title">Browser Hijacker</span></div>
+<div class="ep"><span class="ep-num">319</span><span class="ep-title">Formjacker & Magecart Skimmer</span></div>
+<div class="ep"><span class="ep-num">320</span><span class="ep-title">Malware Analysis — Static Analysis</span></div>
+<div class="ep"><span class="ep-num">321</span><span class="ep-title">Malware Analysis — Dynamic Analysis</span></div>
+<div class="ep"><span class="ep-num">322</span><span class="ep-title">Sandbox Evasion Techniques</span></div>
+<div class="ep"><span class="ep-num">323</span><span class="ep-title">Anti-VM & Anti-Debugging</span></div>
+<div class="ep"><span class="ep-num">324</span><span class="ep-title">Code Obfuscation</span></div>
+<div class="ep"><span class="ep-num">325</span><span class="ep-title">Packing & Unpacking Malware</span></div>
+<div class="ep"><span class="ep-num">326</span><span class="ep-title">Malware Persistence Mechanisms</span></div>
+<div class="ep"><span class="ep-num">327</span><span class="ep-title">C2 Frameworks — Cobalt Strike</span></div>
+<div class="ep"><span class="ep-num">328</span><span class="ep-title">C2 Frameworks — Metasploit Meterpreter</span></div>
+<div class="ep"><span class="ep-num">329</span><span class="ep-title">Malware Reverse Engineering — Basics</span></div>
+<div class="ep"><span class="ep-num">330</span><span class="ep-title">IDA Pro & Ghidra</span></div>
+<div class="ep"><span class="ep-num">331</span><span class="ep-title">YARA Rules — Malware Detection</span></div>
+<div class="ep"><span class="ep-num">332</span><span class="ep-title">EDR Solutions & Bypass</span></div>
+<div class="ep"><span class="ep-num">333</span><span class="ep-title">Antivirus Evasion Techniques</span></div>
+<div class="ep"><span class="ep-num">334</span><span class="ep-title">Stuxnet — أول سلاح إلكتروني في التاريخ</span></div>
+<div class="ep"><span class="ep-num">335</span><span class="ep-title">Emotet — أخطر Botnet في العالم</span></div>
+<div class="ep"><span class="ep-num">336</span><span class="ep-title">Mirai Botnet — اختراق الـ IoT</span></div>
+<div class="ep"><span class="ep-num">337</span><span class="ep-title">SolarWinds Supply Chain Attack</span></div>
+<div class="ep"><span class="ep-num">338</span><span class="ep-title">Malware في APT Campaigns</span></div>
+<div class="ep"><span class="ep-num">339</span><span class="ep-title">Threat Intelligence & Malware IOCs</span></div>
+<div class="ep"><span class="ep-num">340</span><span class="ep-title">Incident Response لهجمات Malware</span></div>
+<div class="ep"><span class="ep-num">341</span><span class="ep-title">Memory Forensics — Volatility</span></div>
+<div class="ep"><span class="ep-num">342</span><span class="ep-title">Network Forensics للـ Malware</span></div>
+<div class="ep"><span class="ep-num">343</span><span class="ep-title">Malware Defense — Zero Trust + EDR</span></div>
+<div class="ep"><span class="ep-num">344</span><span class="ep-title">PUPs & Scareware</span></div>
+<div class="ep"><span class="ep-num">345</span><span class="ep-title">Malware الموسم — الخلاصة والمراجعة</span></div>
+</div></div>
+
+<!-- SEASON 8 -->
+<div class="season s8" data-season="8">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الثامن — تقنيات الاستغلال (Exploitation)</span>
+  <span class="season-range">حلقة 346 → 415</span>
+  <span class="season-count">70 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">346</span><span class="ep-title">Exploitation — المقدمة</span></div>
+<div class="ep"><span class="ep-num">347</span><span class="ep-title">Buffer Overflow — النظرية</span></div>
+<div class="ep"><span class="ep-num">348</span><span class="ep-title">Stack Buffer Overflow</span></div>
+<div class="ep"><span class="ep-num">349</span><span class="ep-title">Stack Smashing عملي</span></div>
+<div class="ep"><span class="ep-num">350</span><span class="ep-title">Heap Buffer Overflow</span></div>
+<div class="ep"><span class="ep-num">351</span><span class="ep-title">Heap Spray</span></div>
+<div class="ep"><span class="ep-num">352</span><span class="ep-title">Return-Oriented Programming — ROP</span></div>
+<div class="ep"><span class="ep-num">353</span><span class="ep-title">Use-After-Free</span></div>
+<div class="ep"><span class="ep-num">354</span><span class="ep-title">Double Free Vulnerability</span></div>
+<div class="ep"><span class="ep-num">355</span><span class="ep-title">Null Pointer Dereference</span></div>
+<div class="ep"><span class="ep-num">356</span><span class="ep-title">Format String Attack</span></div>
+<div class="ep"><span class="ep-num">357</span><span class="ep-title">Integer Overflow/Underflow</span></div>
+<div class="ep"><span class="ep-num">358</span><span class="ep-title">Race Condition — TOCTOU</span></div>
+<div class="ep"><span class="ep-num">359</span><span class="ep-title">Type Confusion & Off-by-One Error</span></div>
+<div class="ep"><span class="ep-num">360</span><span class="ep-title">Shellcode Writing Basics</span></div>
+<div class="ep"><span class="ep-num">361</span><span class="ep-title">Shellcode Injection</span></div>
+<div class="ep"><span class="ep-num">362</span><span class="ep-title">Exploit Development Methodology</span></div>
+<div class="ep"><span class="ep-num">363</span><span class="ep-title">Metasploit Framework — الأساسيات</span></div>
+<div class="ep"><span class="ep-num">364</span><span class="ep-title">Metasploit — Advanced Usage</span></div>
+<div class="ep"><span class="ep-num">365</span><span class="ep-title">Custom Exploit Development</span></div>
+<div class="ep"><span class="ep-num">366</span><span class="ep-title">ASLR — ما هو وكيف يُكسر؟</span></div>
+<div class="ep"><span class="ep-num">367</span><span class="ep-title">DEP/NX — ما هو وكيف يُتجاوز؟</span></div>
+<div class="ep"><span class="ep-num">368</span><span class="ep-title">Stack Canaries — ما هي وكيف تُكسر؟</span></div>
+<div class="ep"><span class="ep-num">369</span><span class="ep-title">Windows Exploitation Techniques</span></div>
+<div class="ep"><span class="ep-num">370</span><span class="ep-title">Linux Exploitation Techniques</span></div>
+<div class="ep"><span class="ep-num">371</span><span class="ep-title">Kernel Exploitation</span></div>
+<div class="ep"><span class="ep-num">372</span><span class="ep-title">Privilege Escalation — Windows</span></div>
+<div class="ep"><span class="ep-num">373</span><span class="ep-title">Privilege Escalation — Linux</span></div>
+<div class="ep"><span class="ep-num">374</span><span class="ep-title">Token Impersonation — Windows</span></div>
+<div class="ep"><span class="ep-num">375</span><span class="ep-title">DLL Injection</span></div>
+<div class="ep"><span class="ep-num">376</span><span class="ep-title">Process Hollowing</span></div>
+<div class="ep"><span class="ep-num">377</span><span class="ep-title">Process Doppelgänging</span></div>
+<div class="ep"><span class="ep-num">378</span><span class="ep-title">Reflective DLL Loading</span></div>
+<div class="ep"><span class="ep-num">379</span><span class="ep-title">Phantom DLL Hijacking</span></div>
+<div class="ep"><span class="ep-num">380</span><span class="ep-title">Atom Bombing</span></div>
+<div class="ep"><span class="ep-num">381</span><span class="ep-title">Heaven's Gate Technique</span></div>
+<div class="ep"><span class="ep-num">382</span><span class="ep-title">Thread Execution Hijacking</span></div>
+<div class="ep"><span class="ep-num">383</span><span class="ep-title">GOT/PLT Overwrite & Vtable Hijacking</span></div>
+<div class="ep"><span class="ep-num">384</span><span class="ep-title">Active Directory — مقدمة شاملة</span></div>
+<div class="ep"><span class="ep-num">385</span><span class="ep-title">Kerberos Protocol — كيف يعمل؟</span></div>
+<div class="ep"><span class="ep-num">386</span><span class="ep-title">Pass-the-Hash Attack</span></div>
+<div class="ep"><span class="ep-num">387</span><span class="ep-title">Pass-the-Ticket Attack</span></div>
+<div class="ep"><span class="ep-num">388</span><span class="ep-title">Overpass-the-Hash</span></div>
+<div class="ep"><span class="ep-num">389</span><span class="ep-title">Kerberoasting</span></div>
+<div class="ep"><span class="ep-num">390</span><span class="ep-title">AS-REP Roasting</span></div>
+<div class="ep"><span class="ep-num">391</span><span class="ep-title">Golden Ticket Attack</span></div>
+<div class="ep"><span class="ep-num">392</span><span class="ep-title">Silver Ticket Attack</span></div>
+<div class="ep"><span class="ep-num">393</span><span class="ep-title">Diamond & Sapphire Ticket</span></div>
+<div class="ep"><span class="ep-num">394</span><span class="ep-title">DCSync Attack</span></div>
+<div class="ep"><span class="ep-num">395</span><span class="ep-title">Skeleton Key Attack</span></div>
+<div class="ep"><span class="ep-num">396</span><span class="ep-title">DCShadow Attack</span></div>
+<div class="ep"><span class="ep-num">397</span><span class="ep-title">BloodHound — AD Enumeration</span></div>
+<div class="ep"><span class="ep-num">398</span><span class="ep-title">NTLM Relay Attack</span></div>
+<div class="ep"><span class="ep-num">399</span><span class="ep-title">Active Directory Attack Paths</span></div>
+<div class="ep"><span class="ep-num">400</span><span class="ep-title">PrintNightmare — CVE-2021-34527</span></div>
+<div class="ep"><span class="ep-num">401</span><span class="ep-title">ZeroLogon — CVE-2020-1472</span></div>
+<div class="ep"><span class="ep-num">402</span><span class="ep-title">MS17-010 — EternalBlue</span></div>
+<div class="ep"><span class="ep-num">403</span><span class="ep-title">ProxyLogon / ProxyShell — Exchange</span></div>
+<div class="ep"><span class="ep-num">404</span><span class="ep-title">Log4Shell — CVE-2021-44228</span></div>
+<div class="ep"><span class="ep-num">405</span><span class="ep-title">ShellShock & Heartbleed Revisited</span></div>
+<div class="ep"><span class="ep-num">406</span><span class="ep-title">Zero-Day Vulnerabilities</span></div>
+<div class="ep"><span class="ep-num">407</span><span class="ep-title">Exploit Frameworks Comparison</span></div>
+<div class="ep"><span class="ep-num">408</span><span class="ep-title">VDSO Hijacking — Linux</span></div>
+<div class="ep"><span class="ep-num">409</span><span class="ep-title">Heap Grooming Techniques</span></div>
+<div class="ep"><span class="ep-num">410</span><span class="ep-title">Fuzzing — العثور على ثغرات بالتلقائي</span></div>
+<div class="ep"><span class="ep-num">411</span><span class="ep-title">Binary Exploitation CTF Walkthrough</span></div>
+<div class="ep"><span class="ep-num">412</span><span class="ep-title">Patch Diffing — تحليل التحديثات الأمنية</span></div>
+<div class="ep"><span class="ep-num">413</span><span class="ep-title">Responsible Disclosure — الإفصاح المسؤول</span></div>
+<div class="ep"><span class="ep-num">414</span><span class="ep-title">Exploit Defense Strategy</span></div>
+<div class="ep"><span class="ep-num">415</span><span class="ep-title">Exploitation — الخلاصة والمراجعة</span></div>
+</div></div>
+
+<!-- SEASON 9 -->
+<div class="season s9" data-season="9">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم التاسع — ما بعد الاختراق (Post-Exploitation)</span>
+  <span class="season-range">حلقة 416 → 445</span>
+  <span class="season-count">30 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">416</span><span class="ep-title">Post-Exploitation — المقدمة</span></div>
+<div class="ep"><span class="ep-num">417</span><span class="ep-title">Situational Awareness — الاستطلاع الداخلي</span></div>
+<div class="ep"><span class="ep-num">418</span><span class="ep-title">Living Off The Land — LOLBins</span></div>
+<div class="ep"><span class="ep-num">419</span><span class="ep-title">PowerShell for Post-Exploitation</span></div>
+<div class="ep"><span class="ep-num">420</span><span class="ep-title">WMI Abuse for Lateral Movement</span></div>
+<div class="ep"><span class="ep-num">421</span><span class="ep-title">Persistence — Registry Run Keys</span></div>
+<div class="ep"><span class="ep-num">422</span><span class="ep-title">Persistence — Scheduled Tasks & Cron Jobs</span></div>
+<div class="ep"><span class="ep-num">423</span><span class="ep-title">Persistence — Services & Daemons</span></div>
+<div class="ep"><span class="ep-num">424</span><span class="ep-title">Persistence — Startup Folder</span></div>
+<div class="ep"><span class="ep-num">425</span><span class="ep-title">Persistence — WMI Event Subscription</span></div>
+<div class="ep"><span class="ep-num">426</span><span class="ep-title">Persistence — COM Hijacking</span></div>
+<div class="ep"><span class="ep-num">427</span><span class="ep-title">Persistence — AppInit DLLs & IFEO</span></div>
+<div class="ep"><span class="ep-num">428</span><span class="ep-title">Bootkit / MBR Infection</span></div>
+<div class="ep"><span class="ep-num">429</span><span class="ep-title">UEFI Firmware Implant</span></div>
+<div class="ep"><span class="ep-num">430</span><span class="ep-title">Lateral Movement — SMB</span></div>
+<div class="ep"><span class="ep-num">431</span><span class="ep-title">Lateral Movement — WinRM</span></div>
+<div class="ep"><span class="ep-num">432</span><span class="ep-title">Lateral Movement — RDP</span></div>
+<div class="ep"><span class="ep-num">433</span><span class="ep-title">Data Exfiltration — DNS Tunneling</span></div>
+<div class="ep"><span class="ep-num">434</span><span class="ep-title">Data Exfiltration — ICMP Tunneling</span></div>
+<div class="ep"><span class="ep-num">435</span><span class="ep-title">Data Exfiltration — HTTP Tunneling</span></div>
+<div class="ep"><span class="ep-num">436</span><span class="ep-title">Anti-Forensics Techniques</span></div>
+<div class="ep"><span class="ep-num">437</span><span class="ep-title">Log Tampering</span></div>
+<div class="ep"><span class="ep-num">438</span><span class="ep-title">Timestomping</span></div>
+<div class="ep"><span class="ep-num">439</span><span class="ep-title">C2 Communication Stealth</span></div>
+<div class="ep"><span class="ep-num">440</span><span class="ep-title">Covering Tracks — إخفاء الآثار</span></div>
+<div class="ep"><span class="ep-num">441</span><span class="ep-title">Threat Hunting — صيد المهاجمين</span></div>
+<div class="ep"><span class="ep-num">442</span><span class="ep-title">Incident Response & Forensics</span></div>
+<div class="ep"><span class="ep-num">443</span><span class="ep-title">Digital Forensics Basics</span></div>
+<div class="ep"><span class="ep-num">444</span><span class="ep-title">MITRE ATT&CK Framework</span></div>
+<div class="ep"><span class="ep-num">445</span><span class="ep-title">Red Team Full Simulation Walkthrough</span></div>
+</div></div>
+
+<!-- SEASON 10 -->
+<div class="season s10" data-season="10">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم العاشر — هجمات الهاردوير (Hardware Attacks)</span>
+  <span class="season-range">حلقة 446 → 490</span>
+  <span class="season-count">45 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">446</span><span class="ep-title">Hardware Security — المقدمة الشاملة</span></div>
+<div class="ep"><span class="ep-num">447</span><span class="ep-title">Physical Security — لماذا مهمة؟</span></div>
+<div class="ep"><span class="ep-num">448</span><span class="ep-title">Cold Boot Attack</span></div>
+<div class="ep"><span class="ep-num">449</span><span class="ep-title">Evil Maid Attack</span></div>
+<div class="ep"><span class="ep-num">450</span><span class="ep-title">DMA Attack — Thunderbolt/PCIe</span></div>
+<div class="ep"><span class="ep-num">451</span><span class="ep-title">Hardware Keylogger</span></div>
+<div class="ep"><span class="ep-num">452</span><span class="ep-title">USB Rubber Ducky</span></div>
+<div class="ep"><span class="ep-num">453</span><span class="ep-title">BadUSB Attack</span></div>
+<div class="ep"><span class="ep-num">454</span><span class="ep-title">Juice Jacking — USB Charging Attack</span></div>
+<div class="ep"><span class="ep-num">455</span><span class="ep-title">Rogue Charging Station</span></div>
+<div class="ep"><span class="ep-num">456</span><span class="ep-title">JTAG Interface Attack</span></div>
+<div class="ep"><span class="ep-num">457</span><span class="ep-title">UART Debug Port Attack</span></div>
+<div class="ep"><span class="ep-num">458</span><span class="ep-title">SWD Interface Attack</span></div>
+<div class="ep"><span class="ep-num">459</span><span class="ep-title">Chip Decapping & Reverse Engineering</span></div>
+<div class="ep"><span class="ep-num">460</span><span class="ep-title">Voltage Glitching Attack</span></div>
+<div class="ep"><span class="ep-num">461</span><span class="ep-title">Clock Glitching Attack</span></div>
+<div class="ep"><span class="ep-num">462</span><span class="ep-title">Laser Fault Injection</span></div>
+<div class="ep"><span class="ep-num">463</span><span class="ep-title">EEPROM / Flash Memory Dumping</span></div>
+<div class="ep"><span class="ep-num">464</span><span class="ep-title">BIOS/UEFI Attack</span></div>
+<div class="ep"><span class="ep-num">465</span><span class="ep-title">Hardcoded Credentials in Firmware</span></div>
+<div class="ep"><span class="ep-num">466</span><span class="ep-title">Bootloader Unlock Attack</span></div>
+<div class="ep"><span class="ep-num">467</span><span class="ep-title">Supply Chain Hardware Implant</span></div>
+<div class="ep"><span class="ep-num">468</span><span class="ep-title">Counterfeit Hardware</span></div>
+<div class="ep"><span class="ep-num">469</span><span class="ep-title">Malicious Peripheral Devices</span></div>
+<div class="ep"><span class="ep-num">470</span><span class="ep-title">Side-Channel Attacks — المقدمة</span></div>
+<div class="ep"><span class="ep-num">471</span><span class="ep-title">Power Analysis — SPA & DPA</span></div>
+<div class="ep"><span class="ep-num">472</span><span class="ep-title">Electromagnetic Analysis — EMA</span></div>
+<div class="ep"><span class="ep-num">473</span><span class="ep-title">Acoustic Cryptanalysis</span></div>
+<div class="ep"><span class="ep-num">474</span><span class="ep-title">Cache Timing Attack</span></div>
+<div class="ep"><span class="ep-num">475</span><span class="ep-title">Flush+Reload & Prime+Probe</span></div>
+<div class="ep"><span class="ep-num">476</span><span class="ep-title">Spectre Vulnerability</span></div>
+<div class="ep"><span class="ep-num">477</span><span class="ep-title">Meltdown Vulnerability</span></div>
+<div class="ep"><span class="ep-num">478</span><span class="ep-title">Foreshadow — L1 Terminal Fault</span></div>
+<div class="ep"><span class="ep-num">479</span><span class="ep-title">ZombieLoad & RIDL & MDS Attacks</span></div>
+<div class="ep"><span class="ep-num">480</span><span class="ep-title">Hertzbleed Attack</span></div>
+<div class="ep"><span class="ep-num">481</span><span class="ep-title">Rowhammer Attack</span></div>
+<div class="ep"><span class="ep-num">482</span><span class="ep-title">RAMBleed & Throwhammer</span></div>
+<div class="ep"><span class="ep-num">483</span><span class="ep-title">SGX Attacks — Plundervolt, SGAxe</span></div>
+<div class="ep"><span class="ep-num">484</span><span class="ep-title">TLBleed & PortSmash</span></div>
+<div class="ep"><span class="ep-num">485</span><span class="ep-title">Van Eck Phreaking — TEMPEST</span></div>
+<div class="ep"><span class="ep-num">486</span><span class="ep-title">Hardware Implants in Supply Chain</span></div>
+<div class="ep"><span class="ep-num">487</span><span class="ep-title">TPM Security & Attacks</span></div>
+<div class="ep"><span class="ep-num">488</span><span class="ep-title">Secure Enclave Attacks</span></div>
+<div class="ep"><span class="ep-num">489</span><span class="ep-title">Hardware Security Defense Strategy</span></div>
+<div class="ep"><span class="ep-num">490</span><span class="ep-title">Secure Hardware Design Principles</span></div>
+</div></div>
+
+<!-- SEASON 11 -->
+<div class="season s11" data-season="11">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الحادي عشر — الهجمات اللاسلكية (Wireless Attacks)</span>
+  <span class="season-range">حلقة 491 → 525</span>
+  <span class="season-count">35 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">491</span><span class="ep-title">Wireless Security — المقدمة الشاملة</span></div>
+<div class="ep"><span class="ep-num">492</span><span class="ep-title">WiFi Standards & Encryption Protocols</span></div>
+<div class="ep"><span class="ep-num">493</span><span class="ep-title">WEP Cracking</span></div>
+<div class="ep"><span class="ep-num">494</span><span class="ep-title">WPA2 Handshake Capture</span></div>
+<div class="ep"><span class="ep-num">495</span><span class="ep-title">WPA2 Password Cracking — Aircrack-ng</span></div>
+<div class="ep"><span class="ep-num">496</span><span class="ep-title">PMKID Attack</span></div>
+<div class="ep"><span class="ep-num">497</span><span class="ep-title">WPS PIN Attack — Pixie Dust</span></div>
+<div class="ep"><span class="ep-num">498</span><span class="ep-title">WPA2 KRACK Attack</span></div>
+<div class="ep"><span class="ep-num">499</span><span class="ep-title">WPA3 Dragonblood Attack</span></div>
+<div class="ep"><span class="ep-num">500</span><span class="ep-title">الحلقة 500 🎉 — WiFi Deauthentication Attack</span></div>
+<div class="ep"><span class="ep-num">501</span><span class="ep-title">Evil Twin & Rogue Access Point</span></div>
+<div class="ep"><span class="ep-num">502</span><span class="ep-title">Karma Attack</span></div>
+<div class="ep"><span class="ep-num">503</span><span class="ep-title">WiFi Pineapple</span></div>
+<div class="ep"><span class="ep-num">504</span><span class="ep-title">Bluetooth Security — المقدمة</span></div>
+<div class="ep"><span class="ep-num">505</span><span class="ep-title">Bluejacking & Bluesnarfing</span></div>
+<div class="ep"><span class="ep-num">506</span><span class="ep-title">Bluebugging</span></div>
+<div class="ep"><span class="ep-num">507</span><span class="ep-title">KNOB Attack — Bluetooth</span></div>
+<div class="ep"><span class="ep-num">508</span><span class="ep-title">BIAS Attack — Bluetooth Impersonation</span></div>
+<div class="ep"><span class="ep-num">509</span><span class="ep-title">BrakTooth & BlueBorne</span></div>
+<div class="ep"><span class="ep-num">510</span><span class="ep-title">NFC Security & Relay Attack</span></div>
+<div class="ep"><span class="ep-num">511</span><span class="ep-title">RFID Cloning & Skimming</span></div>
+<div class="ep"><span class="ep-num">512</span><span class="ep-title">Zigbee & Z-Wave Attacks</span></div>
+<div class="ep"><span class="ep-num">513</span><span class="ep-title">LoRa Protocol Attacks</span></div>
+<div class="ep"><span class="ep-num">514</span><span class="ep-title">GPS Spoofing</span></div>
+<div class="ep"><span class="ep-num">515</span><span class="ep-title">GPS Jamming</span></div>
+<div class="ep"><span class="ep-num">516</span><span class="ep-title">Infrared Replay Attack</span></div>
+<div class="ep"><span class="ep-num">517</span><span class="ep-title">Powerline Network Eavesdropping</span></div>
+<div class="ep"><span class="ep-num">518</span><span class="ep-title">Wireless Intrusion Detection</span></div>
+<div class="ep"><span class="ep-num">519</span><span class="ep-title">Wireless Attack Defense</span></div>
+<div class="ep"><span class="ep-num">520</span><span class="ep-title">WiFi Security Best Practices</span></div>
+<div class="ep"><span class="ep-num">521</span><span class="ep-title">Enterprise WiFi Security — 802.1X</span></div>
+<div class="ep"><span class="ep-num">522</span><span class="ep-title">Wireless Pentesting Full Walkthrough</span></div>
+<div class="ep"><span class="ep-num">523</span><span class="ep-title">WiFi Hotspot Security</span></div>
+<div class="ep"><span class="ep-num">524</span><span class="ep-title">Rogue AP Detection</span></div>
+<div class="ep"><span class="ep-num">525</span><span class="ep-title">Wireless — الخلاصة والمراجعة</span></div>
+</div></div>
+
+<!-- SEASON 12 -->
+<div class="season s12" data-season="12">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الثاني عشر — هجمات الاتصالات (Telecom Attacks)</span>
+  <span class="season-range">حلقة 526 → 545</span>
+  <span class="season-count">20 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">526</span><span class="ep-title">Telecom Security — المقدمة</span></div>
+<div class="ep"><span class="ep-num">527</span><span class="ep-title">SS7 Protocol — ثغرة في قلب الاتصالات</span></div>
+<div class="ep"><span class="ep-num">528</span><span class="ep-title">IMSI Catcher — Stingray</span></div>
+<div class="ep"><span class="ep-num">529</span><span class="ep-title">LTE Attack — IMP4GT</span></div>
+<div class="ep"><span class="ep-num">530</span><span class="ep-title">5G Security Issues</span></div>
+<div class="ep"><span class="ep-num">531</span><span class="ep-title">SIM Swapping Attack</span></div>
+<div class="ep"><span class="ep-num">532</span><span class="ep-title">SIM Swap Real Cases — منروغياكوبوس</span></div>
+<div class="ep"><span class="ep-num">533</span><span class="ep-title">Number Porting Fraud</span></div>
+<div class="ep"><span class="ep-num">534</span><span class="ep-title">Caller ID Spoofing</span></div>
+<div class="ep"><span class="ep-num">535</span><span class="ep-title">VoIP Attacks — SIP Flooding</span></div>
+<div class="ep"><span class="ep-num">536</span><span class="ep-title">VoIP Toll Fraud</span></div>
+<div class="ep"><span class="ep-num">537</span><span class="ep-title">PBX Hacking</span></div>
+<div class="ep"><span class="ep-num">538</span><span class="ep-title">2G Downgrade Attack</span></div>
+<div class="ep"><span class="ep-num">539</span><span class="ep-title">Wiretapping & Lawful Intercept Abuse</span></div>
+<div class="ep"><span class="ep-num">540</span><span class="ep-title">GSM Security Analysis</span></div>
+<div class="ep"><span class="ep-num">541</span><span class="ep-title">Telco Insider Attack</span></div>
+<div class="ep"><span class="ep-num">542</span><span class="ep-title">Telecom Fraud Detection</span></div>
+<div class="ep"><span class="ep-num">543</span><span class="ep-title">Emergency Services Attack</span></div>
+<div class="ep"><span class="ep-num">544</span><span class="ep-title">Telecom Security Defense</span></div>
+<div class="ep"><span class="ep-num">545</span><span class="ep-title">Telecom — الخلاصة</span></div>
+</div></div>
+
+<!-- SEASON 13 -->
+<div class="season s13" data-season="13">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الثالث عشر — IoT والأنظمة الصناعية (ICS/SCADA)</span>
+  <span class="season-range">حلقة 546 → 575</span>
+  <span class="season-count">30 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">546</span><span class="ep-title">IoT Security — المقدمة الشاملة</span></div>
+<div class="ep"><span class="ep-num">547</span><span class="ep-title">IoT Attack Surface</span></div>
+<div class="ep"><span class="ep-num">548</span><span class="ep-title">Default Credentials Attack</span></div>
+<div class="ep"><span class="ep-num">549</span><span class="ep-title">IoT Firmware Extraction</span></div>
+<div class="ep"><span class="ep-num">550</span><span class="ep-title">Firmware Analysis — Binwalk</span></div>
+<div class="ep"><span class="ep-num">551</span><span class="ep-title">OTA Update Interception</span></div>
+<div class="ep"><span class="ep-num">552</span><span class="ep-title">Hardcoded API Keys in Firmware</span></div>
+<div class="ep"><span class="ep-num">553</span><span class="ep-title">Debug Interface Exposure</span></div>
+<div class="ep"><span class="ep-num">554</span><span class="ep-title">MQTT Broker Attack</span></div>
+<div class="ep"><span class="ep-num">555</span><span class="ep-title">CoAP Protocol Attack</span></div>
+<div class="ep"><span class="ep-num">556</span><span class="ep-title">ICS/SCADA — المقدمة</span></div>
+<div class="ep"><span class="ep-num">557</span><span class="ep-title">Modbus Attack</span></div>
+<div class="ep"><span class="ep-num">558</span><span class="ep-title">DNP3 Attack</span></div>
+<div class="ep"><span class="ep-num">559</span><span class="ep-title">PLC Ladder Logic Injection</span></div>
+<div class="ep"><span class="ep-num">560</span><span class="ep-title">HMI Attack</span></div>
+<div class="ep"><span class="ep-num">561</span><span class="ep-title">Water Treatment Plant Attack — Real Cases</span></div>
+<div class="ep"><span class="ep-num">562</span><span class="ep-title">Power Grid Attack — Ukraine 2015</span></div>
+<div class="ep"><span class="ep-num">563</span><span class="ep-title">Oil Pipeline Attack — Colonial Pipeline</span></div>
+<div class="ep"><span class="ep-num">564</span><span class="ep-title">Medical Device Attacks</span></div>
+<div class="ep"><span class="ep-num">565</span><span class="ep-title">CAN Bus Injection — Smart Car Hacking</span></div>
+<div class="ep"><span class="ep-num">566</span><span class="ep-title">Drone Hijacking</span></div>
+<div class="ep"><span class="ep-num">567</span><span class="ep-title">Smart Meter Attack</span></div>
+<div class="ep"><span class="ep-num">568</span><span class="ep-title">Smart Home Security</span></div>
+<div class="ep"><span class="ep-num">569</span><span class="ep-title">IoT Botnet — Mirai Revisited</span></div>
+<div class="ep"><span class="ep-num">570</span><span class="ep-title">Industrial Espionage via IoT</span></div>
+<div class="ep"><span class="ep-num">571</span><span class="ep-title">Nuclear Facility Cyber Threats</span></div>
+<div class="ep"><span class="ep-num">572</span><span class="ep-title">Railway System Attack</span></div>
+<div class="ep"><span class="ep-num">573</span><span class="ep-title">ICS Security Framework</span></div>
+<div class="ep"><span class="ep-num">574</span><span class="ep-title">IoT Security Defense</span></div>
+<div class="ep"><span class="ep-num">575</span><span class="ep-title">ICS/SCADA — الخلاصة</span></div>
+</div></div>
+
+<!-- SEASON 14 -->
+<div class="season s14" data-season="14">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الرابع عشر — أمن السحابة والتقنيات الحديثة (Cloud & Modern)</span>
+  <span class="season-range">حلقة 576 → 615</span>
+  <span class="season-count">40 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">576</span><span class="ep-title">Cloud Security — المقدمة الشاملة</span></div>
+<div class="ep"><span class="ep-num">577</span><span class="ep-title">Shared Responsibility Model</span></div>
+<div class="ep"><span class="ep-num">578</span><span class="ep-title">AWS Security Architecture</span></div>
+<div class="ep"><span class="ep-num">579</span><span class="ep-title">Azure Security Architecture</span></div>
+<div class="ep"><span class="ep-num">580</span><span class="ep-title">GCP Security Architecture</span></div>
+<div class="ep"><span class="ep-num">581</span><span class="ep-title">Misconfigured S3 Bucket</span></div>
+<div class="ep"><span class="ep-num">582</span><span class="ep-title">Cloud Storage Misconfigurations</span></div>
+<div class="ep"><span class="ep-num">583</span><span class="ep-title">IMDS Attack — Cloud Metadata</span></div>
+<div class="ep"><span class="ep-num">584</span><span class="ep-title">Docker Security & Container Escape</span></div>
+<div class="ep"><span class="ep-num">585</span><span class="ep-title">Kubernetes Security</span></div>
+<div class="ep"><span class="ep-num">586</span><span class="ep-title">Kubernetes RBAC Abuse</span></div>
+<div class="ep"><span class="ep-num">587</span><span class="ep-title">Serverless Security & Injection</span></div>
+<div class="ep"><span class="ep-num">588</span><span class="ep-title">Microservices Attack Vectors</span></div>
+<div class="ep"><span class="ep-num">589</span><span class="ep-title">Service Mesh Attack</span></div>
+<div class="ep"><span class="ep-num">590</span><span class="ep-title">API Gateway Security</span></div>
+<div class="ep"><span class="ep-num">591</span><span class="ep-title">CI/CD Pipeline Attack</span></div>
+<div class="ep"><span class="ep-num">592</span><span class="ep-title">Build System Poisoning</span></div>
+<div class="ep"><span class="ep-num">593</span><span class="ep-title">Supply Chain Attack — المقدمة</span></div>
+<div class="ep"><span class="ep-num">594</span><span class="ep-title">Dependency Confusion Attack</span></div>
+<div class="ep"><span class="ep-num">595</span><span class="ep-title">Typosquatting — npm & PyPI</span></div>
+<div class="ep"><span class="ep-num">596</span><span class="ep-title">SolarWinds Case Study</span></div>
+<div class="ep"><span class="ep-num">597</span><span class="ep-title">XZ Utils Backdoor — 2024</span></div>
+<div class="ep"><span class="ep-num">598</span><span class="ep-title">Terraform / IaC Misconfiguration</span></div>
+<div class="ep"><span class="ep-num">599</span><span class="ep-title">Cloud Identity & IAM Attacks</span></div>
+<div class="ep"><span class="ep-num">600</span><span class="ep-title">الحلقة 600 🎉 — Cross-Account Attacks AWS</span></div>
+<div class="ep"><span class="ep-num">601</span><span class="ep-title">Cloud Forensics</span></div>
+<div class="ep"><span class="ep-num">602</span><span class="ep-title">Container Forensics</span></div>
+<div class="ep"><span class="ep-num">603</span><span class="ep-title">Cloud Security Posture Management</span></div>
+<div class="ep"><span class="ep-num">604</span><span class="ep-title">CASB Solutions</span></div>
+<div class="ep"><span class="ep-num">605</span><span class="ep-title">DevSecOps Practices</span></div>
+<div class="ep"><span class="ep-num">606</span><span class="ep-title">Zero Trust in Cloud</span></div>
+<div class="ep"><span class="ep-num">607</span><span class="ep-title">Multi-Cloud Security Challenges</span></div>
+<div class="ep"><span class="ep-num">608</span><span class="ep-title">Cloud Pentesting Methodology</span></div>
+<div class="ep"><span class="ep-num">609</span><span class="ep-title">GitHub & Code Repository Security</span></div>
+<div class="ep"><span class="ep-num">610</span><span class="ep-title">Secrets in Code — GitLeaks</span></div>
+<div class="ep"><span class="ep-num">611</span><span class="ep-title">Cloud Privilege Escalation</span></div>
+<div class="ep"><span class="ep-num">612</span><span class="ep-title">Lambda & Functions Attack</span></div>
+<div class="ep"><span class="ep-num">613</span><span class="ep-title">Cloud Best Practices</span></div>
+<div class="ep"><span class="ep-num">614</span><span class="ep-title">Cloud Pentesting Tools — Pacu, ScoutSuite</span></div>
+<div class="ep"><span class="ep-num">615</span><span class="ep-title">Cloud — الخلاصة</span></div>
+</div></div>
+
+<!-- SEASON 15 -->
+<div class="season s15" data-season="15">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الخامس عشر — هجمات الذكاء الاصطناعي (AI/ML Attacks)</span>
+  <span class="season-range">حلقة 616 → 645</span>
+  <span class="season-count">30 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">616</span><span class="ep-title">AI Security — المقدمة الشاملة</span></div>
+<div class="ep"><span class="ep-num">617</span><span class="ep-title">Adversarial Examples — خداع الـ AI</span></div>
+<div class="ep"><span class="ep-num">618</span><span class="ep-title">Adversarial Images — FGSM & PGD</span></div>
+<div class="ep"><span class="ep-num">619</span><span class="ep-title">Model Poisoning Attack</span></div>
+<div class="ep"><span class="ep-num">620</span><span class="ep-title">Data Poisoning</span></div>
+<div class="ep"><span class="ep-num">621</span><span class="ep-title">Backdoor في AI Models — Trojan AI</span></div>
+<div class="ep"><span class="ep-num">622</span><span class="ep-title">Model Inversion Attack</span></div>
+<div class="ep"><span class="ep-num">623</span><span class="ep-title">Membership Inference Attack</span></div>
+<div class="ep"><span class="ep-num">624</span><span class="ep-title">Model Stealing / Extraction</span></div>
+<div class="ep"><span class="ep-num">625</span><span class="ep-title">Evasion Attacks على AI Detection</span></div>
+<div class="ep"><span class="ep-num">626</span><span class="ep-title">Prompt Injection — المقدمة</span></div>
+<div class="ep"><span class="ep-num">627</span><span class="ep-title">Prompt Injection عملي</span></div>
+<div class="ep"><span class="ep-num">628</span><span class="ep-title">Indirect Prompt Injection</span></div>
+<div class="ep"><span class="ep-num">629</span><span class="ep-title">LLM Jailbreaking</span></div>
+<div class="ep"><span class="ep-num">630</span><span class="ep-title">AI-generated Phishing</span></div>
+<div class="ep"><span class="ep-num">631</span><span class="ep-title">Deepfake Detection & Attacks</span></div>
+<div class="ep"><span class="ep-num">632</span><span class="ep-title">Synthetic Identity Fraud</span></div>
+<div class="ep"><span class="ep-num">633</span><span class="ep-title">Hallucination Exploitation</span></div>
+<div class="ep"><span class="ep-num">634</span><span class="ep-title">AI in Cyber Offense</span></div>
+<div class="ep"><span class="ep-num">635</span><span class="ep-title">AI in Cyber Defense</span></div>
+<div class="ep"><span class="ep-num">636</span><span class="ep-title">OWASP LLM Top 10</span></div>
+<div class="ep"><span class="ep-num">637</span><span class="ep-title">RAG System Attacks</span></div>
+<div class="ep"><span class="ep-num">638</span><span class="ep-title">Multi-agent System Attacks</span></div>
+<div class="ep"><span class="ep-num">639</span><span class="ep-title">AI Red Teaming</span></div>
+<div class="ep"><span class="ep-num">640</span><span class="ep-title">Federated Learning Security</span></div>
+<div class="ep"><span class="ep-num">641</span><span class="ep-title">Adversarial Robustness</span></div>
+<div class="ep"><span class="ep-num">642</span><span class="ep-title">AI Supply Chain Security</span></div>
+<div class="ep"><span class="ep-num">643</span><span class="ep-title">AI Governance & Policy</span></div>
+<div class="ep"><span class="ep-num">644</span><span class="ep-title">AI Model Security Testing</span></div>
+<div class="ep"><span class="ep-num">645</span><span class="ep-title">Future of AI in Cybersecurity</span></div>
+</div></div>
+
+<!-- SEASON 16 -->
+<div class="season s16" data-season="16">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم السادس عشر — APT والحروب الإلكترونية (Nation-State)</span>
+  <span class="season-range">حلقة 646 → 665</span>
+  <span class="season-count">20 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">646</span><span class="ep-title">APT — Advanced Persistent Threat المقدمة</span></div>
+<div class="ep"><span class="ep-num">647</span><span class="ep-title">APT Groups & Attribution</span></div>
+<div class="ep"><span class="ep-num">648</span><span class="ep-title">APT28 — Fancy Bear روسيا</span></div>
+<div class="ep"><span class="ep-num">649</span><span class="ep-title">APT29 — Cozy Bear روسيا</span></div>
+<div class="ep"><span class="ep-num">650</span><span class="ep-title">Lazarus Group — كوريا الشمالية</span></div>
+<div class="ep"><span class="ep-num">651</span><span class="ep-title">APT41 & APT10 — الصين</span></div>
+<div class="ep"><span class="ep-num">652</span><span class="ep-title">Cyber Espionage Operations</span></div>
+<div class="ep"><span class="ep-num">653</span><span class="ep-title">Critical Infrastructure Attacks</span></div>
+<div class="ep"><span class="ep-num">654</span><span class="ep-title">Election Interference via Cyber</span></div>
+<div class="ep"><span class="ep-num">655</span><span class="ep-title">Information Warfare & Disinformation</span></div>
+<div class="ep"><span class="ep-num">656</span><span class="ep-title">Cyberwarfare History</span></div>
+<div class="ep"><span class="ep-num">657</span><span class="ep-title">Stuxnet — أول سلاح إلكتروني في التاريخ</span></div>
+<div class="ep"><span class="ep-num">658</span><span class="ep-title">NotPetya — الهجوم الأكثر تكلفة في التاريخ</span></div>
+<div class="ep"><span class="ep-num">659</span><span class="ep-title">Sandworm Operations</span></div>
+<div class="ep"><span class="ep-num">660</span><span class="ep-title">Economic Sabotage via Cyber</span></div>
+<div class="ep"><span class="ep-num">661</span><span class="ep-title">Influence Operations</span></div>
+<div class="ep"><span class="ep-num">662</span><span class="ep-title">Cyber Defense at Nation Level</span></div>
+<div class="ep"><span class="ep-num">663</span><span class="ep-title">Cyber Norms & International Law</span></div>
+<div class="ep"><span class="ep-num">664</span><span class="ep-title">Threat Intelligence for Nations</span></div>
+<div class="ep"><span class="ep-num">665</span><span class="ep-title">Nation-State — الخلاصة</span></div>
+</div></div>
+
+<!-- SEASON 17 -->
+<div class="season s17" data-season="17">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم السابع عشر — الفضاء والكم (Space & Quantum)</span>
+  <span class="season-range">حلقة 666 → 680</span>
+  <span class="season-count">15 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">666</span><span class="ep-title">Space Security — المقدمة</span></div>
+<div class="ep"><span class="ep-num">667</span><span class="ep-title">Satellite Signal Jamming</span></div>
+<div class="ep"><span class="ep-num">668</span><span class="ep-title">GPS Spoofing at Scale</span></div>
+<div class="ep"><span class="ep-num">669</span><span class="ep-title">Ground Station Hacking</span></div>
+<div class="ep"><span class="ep-num">670</span><span class="ep-title">Viasat Attack 2022 — Case Study</span></div>
+<div class="ep"><span class="ep-num">671</span><span class="ep-title">Satellite Firmware Attack</span></div>
+<div class="ep"><span class="ep-num">672</span><span class="ep-title">Space-based Espionage</span></div>
+<div class="ep"><span class="ep-num">673</span><span class="ep-title">Quantum Computing — التهديد للأمن السيبراني</span></div>
+<div class="ep"><span class="ep-num">674</span><span class="ep-title">Shor's Algorithm — كسر RSA</span></div>
+<div class="ep"><span class="ep-num">675</span><span class="ep-title">Grover's Algorithm — إضعاف التشفير</span></div>
+<div class="ep"><span class="ep-num">676</span><span class="ep-title">Harvest Now, Decrypt Later</span></div>
+<div class="ep"><span class="ep-num">677</span><span class="ep-title">Post-Quantum Cryptography</span></div>
+<div class="ep"><span class="ep-num">678</span><span class="ep-title">Quantum Key Distribution</span></div>
+<div class="ep"><span class="ep-num">679</span><span class="ep-title">Quantum-resistant Algorithms — NIST</span></div>
+<div class="ep"><span class="ep-num">680</span><span class="ep-title">Quantum Security — المستقبل</span></div>
+</div></div>
+
+<!-- SEASON 18 -->
+<div class="season s18" data-season="18">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم الثامن عشر — التنظيم والقانون (Legal & Organizational)</span>
+  <span class="season-range">حلقة 681 → 695</span>
+  <span class="season-count">15 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">681</span><span class="ep-title">Cybersecurity Law — الإطار القانوني</span></div>
+<div class="ep"><span class="ep-num">682</span><span class="ep-title">GDPR & Data Privacy</span></div>
+<div class="ep"><span class="ep-num">683</span><span class="ep-title">GDPR Weaponization Attack</span></div>
+<div class="ep"><span class="ep-num">684</span><span class="ep-title">Lawfare in Cybersecurity</span></div>
+<div class="ep"><span class="ep-num">685</span><span class="ep-title">Insider Threat Management</span></div>
+<div class="ep"><span class="ep-num">686</span><span class="ep-title">Third-Party Vendor Risk</span></div>
+<div class="ep"><span class="ep-num">687</span><span class="ep-title">Shadow IT Risks</span></div>
+<div class="ep"><span class="ep-num">688</span><span class="ep-title">M&A Cybersecurity Due Diligence</span></div>
+<div class="ep"><span class="ep-num">689</span><span class="ep-title">Cyber Insurance</span></div>
+<div class="ep"><span class="ep-num">690</span><span class="ep-title">Crisis Management in Cyber Incidents</span></div>
+<div class="ep"><span class="ep-num">691</span><span class="ep-title">Building a Security Culture</span></div>
+<div class="ep"><span class="ep-num">692</span><span class="ep-title">Compliance-Based Attacks</span></div>
+<div class="ep"><span class="ep-num">693</span><span class="ep-title">Security Policy Development</span></div>
+<div class="ep"><span class="ep-num">694</span><span class="ep-title">Board-Level Cybersecurity Communication</span></div>
+<div class="ep"><span class="ep-num">695</span><span class="ep-title">Organizational Security — الخلاصة</span></div>
+</div></div>
+
+<!-- SEASON 19 -->
+<div class="season s19" data-season="19">
+<div class="season-header" onclick="toggleSeason(this)">
+  <span class="season-icon"></span>
+  <span class="season-title">الموسم التاسع عشر — المسار المهني والشهادات (Career & Certs)</span>
+  <span class="season-range">حلقة 696 → 710</span>
+  <span class="season-count">15 حلقة</span>
+  <span class="chevron">▼</span>
+</div>
+<div class="episodes-grid">
+<div class="ep"><span class="ep-num">696</span><span class="ep-title">Cybersecurity Career Paths</span></div>
+<div class="ep"><span class="ep-num">697</span><span class="ep-title">CompTIA Security+ Road Map</span></div>
+<div class="ep"><span class="ep-num">698</span><span class="ep-title">CEH — Certified Ethical Hacker</span></div>
+<div class="ep"><span class="ep-num">699</span><span class="ep-title">OSCP — الشهادة الذهبية للـ Pen Testers</span></div>
+<div class="ep"><span class="ep-num">700</span><span class="ep-title">الحلقة 700 🏆 — CISSP & CISM Overview</span></div>
+<div class="ep"><span class="ep-num">701</span><span class="ep-title">HackTheBox — البداية والمشاريع</span></div>
+<div class="ep"><span class="ep-num">702</span><span class="ep-title">TryHackMe — للمبتدئين</span></div>
+<div class="ep"><span class="ep-num">703</span><span class="ep-title">CTF Competitions — دليل شامل</span></div>
+<div class="ep"><span class="ep-num">704</span><span class="ep-title">Building Your Home Lab</span></div>
+<div class="ep"><span class="ep-num">705</span><span class="ep-title">Red Team vs Blue Team vs Purple Team</span></div>
+<div class="ep"><span class="ep-num">706</span><span class="ep-title">SOC Analyst Career Path</span></div>
+<div class="ep"><span class="ep-num">707</span><span class="ep-title">Bug Bounty Hunter Career Path</span></div>
+<div class="ep"><span class="ep-num">708</span><span class="ep-title">Penetration Tester Career Path</span></div>
+<div class="ep"><span class="ep-num">709</span><span class="ep-title">Threat Intelligence Analyst Career</span></div>
+<div class="ep"><span class="ep-num">710</span><span class="ep-title">🎓 الحلقة الأخيرة — مستقبل الأمن السيبراني</span></div>
+</div></div>
+
+<div class="no-results" id="no-results">ما في نتائج للبحث الحالي</div>
+
+</main>
+
+<script>
+const seasons = [
+  {n:1,name:'الأساسيات',color:'#388bfd'},
+  {n:2,name:'الاستطلاع',color:'#56d364'},
+  {n:3,name:'الهندسة الاجتماعية',color:'#e3b341'},
+  {n:4,name:'هجمات الشبكات',color:'#58a6ff'},
+  {n:5,name:'أمن الويب',color:'#d2a8ff'},
+  {n:6,name:'التشفير',color:'#ffa657'},
+  {n:7,name:'البرمجيات الخبيثة',color:'#ff7b72'},
+  {n:8,name:'الاستغلال',color:'#f778ba'},
+  {n:9,name:'ما بعد الاختراق',color:'#39d353'},
+  {n:10,name:'الهاردوير',color:'#8b949e'},
+  {n:11,name:'اللاسلكي',color:'#79c0ff'},
+  {n:12,name:'الاتصالات',color:'#a5d6ff'},
+  {n:13,name:'IoT & ICS',color:'#7ee787'},
+  {n:14,name:'السحابة',color:'#63e6be'},
+  {n:15,name:'الذكاء الاصطناعي',color:'#bc8cff'},
+  {n:16,name:'APT & Nation-State',color:'#ff9a9a'},
+  {n:17,name:'الفضاء & الكم',color:'#c3d3ff'},
+  {n:18,name:'القانون',color:'#ffd966'},
+  {n:19,name:'المسار المهني',color:'#98ff98'},
+];
+
+const filtersEl = document.getElementById('filters');
+let activeSeason = null;
+
+const allBtn = document.createElement('button');
+allBtn.className = 'filter-btn active';
+allBtn.textContent = 'كل المواسم';
+allBtn.style.background = '#30363d';
+allBtn.style.color = '#e6edf3';
+allBtn.onclick = () => { activeSeason = null; applyFilter(); setActiveBtn(allBtn); };
+filtersEl.appendChild(allBtn);
+
+seasons.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.textContent = `${s.n}. ${s.name}`;
+  btn.onclick = () => { activeSeason = s.n; applyFilter(); setActiveBtn(btn); btn.style.background = s.color; };
+  filtersEl.appendChild(btn);
+});
+
+function setActiveBtn(active) {
+  filtersEl.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active');
+    if (b !== allBtn) b.style.background = '';
+    b.style.color = '';
+  });
+  active.classList.add('active');
+  if (active === allBtn) { allBtn.style.background='#30363d'; allBtn.style.color='#e6edf3'; }
+}
+
+function doSearch() { applyFilter(); }
+
+function applyFilter() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  let vis = 0;
+  document.querySelectorAll('.season').forEach(sec => {
+    const sn = parseInt(sec.dataset.season);
+    const showSeason = activeSeason === null || activeSeason === sn;
+    let anyVis = false;
+    sec.querySelectorAll('.ep').forEach(ep => {
+      const txt = ep.textContent.toLowerCase();
+      const match = showSeason && (q === '' || txt.includes(q));
+      ep.classList.toggle('hidden', !match);
+      if (match) { vis++; anyVis = true; }
+    });
+    sec.style.display = anyVis ? '' : 'none';
+  });
+  document.getElementById('vis-count').textContent = vis;
+  document.getElementById('no-results').style.display = vis === 0 ? 'block' : 'none';
+}
+
+function toggleSeason(header) {
+  header.classList.toggle('collapsed');
+  header.nextElementSibling.classList.toggle('hidden');
+}
+</script>
+</body>
+</html>
