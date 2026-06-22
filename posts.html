@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>خريطة الهاردوير الشاملة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#0a130e;
+    --board2:#0e1a13;
+    --panel:#101d16;
+    --line: rgba(201,130,75,0.16);
+    --copper:#c9824b;
+    --copper-soft: rgba(201,130,75,0.55);
+    --ink:#eaf2ed;
+    --ink-dim:#7e9389;
+    --ink-dim2:#56655c;
+
+    --a:#4c8dff; /* Core */
+    --b:#36c5f0; /* Connectivity */
+    --c:#4ade80; /* I/O */
+    --d:#fbbf24; /* Support */
+    --e:#a78bfa; /* Specialized */
+    --f:#f472b6; /* Emerging */
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(circle at 12% 8%, rgba(76,141,255,0.05), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(244,114,182,0.05), transparent 40%),
+      var(--board);
+    color:var(--ink);
+    font-family:'Cairo', sans-serif;
+    line-height:1.6;
+  }
+
+  /* circuit grid texture */
+  body::before{
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 42px 42px;
+    pointer-events:none;
+    opacity:.35;
+    z-index:0;
+  }
+
+  .wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 24px;}
+
+  code, .mono{font-family:'JetBrains Mono', monospace;}
+
+  /* ===== HERO ===== */
+  header.hero{
+    padding:64px 0 40px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+    overflow:hidden;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    letter-spacing:.18em;
+    color:var(--copper);
+    text-transform:uppercase;
+    margin-bottom:18px;
+    display:flex; align-items:center; gap:10px;
+    direction:ltr;
+    justify-content:flex-end;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--copper);box-shadow:0 0 8px var(--copper);}
+
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    align-items:center;
+    gap:32px;
+  }
+  h1{
+    font-size:32px;
+    font-weight:900;
+    color:var(--ink);
+    margin-bottom:10px;
+    line-height:1.3;
+  }
+  h1 span{color:var(--copper);}
+  .hero-sub{color:var(--ink-dim); font-size:15px; max-width:560px;}
+
+  .bignum{
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:88px;
+    line-height:1;
+    color:var(--ink);
+    text-align:center;
+    position:relative;
+    direction:ltr;
+  }
+  .bignum::after{
+    content:'';
+    position:absolute; bottom:-14px; left:50%; transform:translateX(-50%);
+    width:70%; height:2px;
+    background:linear-gradient(90deg, transparent, var(--copper), transparent);
+  }
+  .bignum small{
+    display:block;
+    font-family:'Cairo',sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-dim);
+    letter-spacing:.02em;
+    margin-top:20px;
+  }
+
+  .stats-row{
+    display:flex; gap:28px; margin-top:28px; flex-wrap:wrap;
+  }
+  .stat{font-family:'JetBrains Mono', monospace;}
+  .stat b{font-size:22px; color:var(--copper); display:block;}
+  .stat span{font-family:'Cairo',sans-serif; font-size:12.5px; color:var(--ink-dim);}
+
+  .legend{
+    display:flex; gap:10px; margin-top:26px; flex-wrap:wrap;
+  }
+  .legend-item{
+    display:flex; align-items:center; gap:7px;
+    font-size:12px; color:var(--ink-dim);
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--line);
+    padding:5px 10px 5px 8px;
+    border-radius:3px;
+  }
+  .legend-item .sq{width:9px;height:9px;border-radius:2px; flex-shrink:0;}
+
+  /* ===== CONTROLS ===== */
+  .controls{
+    position:sticky; top:0; z-index:50;
+    background:rgba(10,19,14,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom:1px solid var(--line);
+    padding:14px 0;
+  }
+  .controls-inner{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  #search{
+    flex:1; min-width:180px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:9px 14px;
+    border-radius:4px;
+    font-family:'Cairo',sans-serif;
+    font-size:13.5px;
+    outline:none;
+  }
+  #search:focus{border-color:var(--copper-soft);}
+  #search::placeholder{color:var(--ink-dim2);}
+
+  .pill{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    padding:8px 13px;
+    border-radius:4px;
+    border:1px solid var(--line);
+    background:var(--panel);
+    color:var(--ink-dim);
+    cursor:pointer;
+    transition:.15s;
+    white-space:nowrap;
+  }
+  .pill:hover{color:var(--ink); border-color:var(--copper-soft);}
+  .pill.active{color:#0a130e; border-color:transparent; font-weight:700;}
+  .count-line{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink-dim2);
+    margin-top:10px;
+  }
+  .count-line b{color:var(--copper);}
+
+  /* ===== GROUPS ===== */
+  main{padding:44px 0 80px;}
+  .group{
+    margin-bottom:46px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:linear-gradient(180deg, var(--panel), var(--board2));
+    overflow:hidden;
+  }
+  .group-head{
+    display:flex; align-items:center; gap:14px;
+    padding:18px 22px;
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+  .group-head::before{
+    content:'';
+    position:absolute; right:0; top:0; bottom:0; width:4px;
+    background:var(--gcolor);
+  }
+  .group-id{
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px; font-weight:700;
+    color:#0a130e;
+    background:var(--gcolor);
+    width:30px;height:30px;
+    border-radius:5px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .group-titles h2{font-size:18px; font-weight:800;}
+  .group-titles .en{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10.5px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-dim2); direction:ltr; text-align:right;
+  }
+  .group-meta{
+    margin-right:auto;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px; color:var(--ink-dim2);
+  }
+
+  .subcat{padding:18px 22px;}
+  .subcat + .subcat{border-top:1px dashed var(--line);}
+  .subcat-title{
+    font-size:13.5px; font-weight:700; color:var(--ink-dim);
+    margin-bottom:12px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .subcat-title::before{
+    content:'▸'; color:var(--gcolor); font-size:11px;
+  }
+  .chips{display:flex; flex-wrap:wrap; gap:8px 6px;}
+
+  .chip{
+    position:relative;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink);
+    background:rgba(255,255,255,0.025);
+    border:1px solid var(--gcolor);
+    border-radius:3px;
+    padding:6px 13px;
+    direction:ltr;
+    unicode-bidi:isolate;
+    transition:.12s;
+    cursor:default;
+  }
+  .chip::before, .chip::after{
+    content:''; position:absolute; top:50%; width:5px; height:1px;
+    background:var(--gcolor); opacity:.9;
+  }
+  .chip::before{left:-5px;}
+  .chip::after{right:-5px;}
+  .chip:hover{
+    background: color-mix(in srgb, var(--gcolor) 14%, transparent);
+    box-shadow:0 0 0 1px var(--gcolor), 0 0 12px color-mix(in srgb, var(--gcolor) 50%, transparent);
+  }
+  .chip.hide, .subcat.hide, .group.hide{display:none;}
+
+  /* ===== FOOTER NOTES ===== */
+  footer{
+    border-top:1px solid var(--line);
+    padding:36px 0 60px;
+  }
+  footer h3{font-size:14px; color:var(--copper); margin-bottom:16px; font-family:'JetBrains Mono',monospace; letter-spacing:.05em;}
+  .notes-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px;}
+  .note{
+    border:1px solid var(--line); border-radius:5px; padding:14px 16px;
+    background:rgba(255,255,255,0.015);
+  }
+  .note b{display:block; font-size:13px; margin-bottom:6px; color:var(--ink);}
+  .note span{font-size:12px; color:var(--ink-dim); font-family:'JetBrains Mono',monospace; direction:ltr; display:block; unicode-bidi:isolate;}
+
+  .no-results{display:none; text-align:center; padding:60px 0; color:var(--ink-dim2); font-family:'JetBrains Mono',monospace; font-size:13px;}
+
+  @media (max-width:720px){
+    .hero-grid{grid-template-columns:1fr;}
+    .bignum{font-size:64px;}
+    h1{font-size:24px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow"><span class="dot"></span>HARDWARE TAXONOMY · REFERENCE SHEET</div>
+    <div class="hero-grid">
+      <div>
+        <h1>خريطة الهاردوير <span>الشاملة</span></h1>
+        <p class="hero-sub">تصنيف مرجعي مفصّل لكل قطع العتاد، من المعالج الرئيسي إلى أصغر حسّاس — منظمة في ست مجموعات كبرى، لتصميم إنفوجرافيك أو محتوى تعليمي.</p>
+        <div class="stats-row">
+          <div class="stat"><b>06</b><span>مجموعات كبرى</span></div>
+          <div class="stat"><b>23</b><span>تصنيف فرعي</span></div>
+          <div class="stat"><b>170+</b><span>قطعة هاردوير</span></div>
+        </div>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="bignum">170<small>قطعة مصنّفة</small></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="controls-inner">
+      <input id="search" type="search" placeholder="ابحث عن قطعة... (مثال: GPS, Sensor, USB)">
+      <div id="filters" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+    </div>
+    <div class="count-line">يعرض <b id="vis-count">170</b> قطعة من أصل <b>170</b></div>
+  </div>
+
+  <main id="main"></main>
+
+  <div class="no-results" id="no-results">لا توجد نتائج مطابقة للبحث</div>
+
+  <footer>
+    <h3>// DESIGN NOTES</h3>
+    <div class="notes-grid">
+      <div class="note"><b>مقاس Carousel فيسبوك</b><span>1080 × 1080 px</span></div>
+      <div class="note"><b>مقاس بوست عمودي</b><span>1080 × 1350 px</span></div>
+      <div class="note"><b>مقاس طباعة/Wall Chart</b><span>A2 / A1</span></div>
+      <div class="note"><b>خط العناوين</b><span>Cairo (800/900)</span></div>
+      <div class="note"><b>خط المصطلحات التقنية</b><span>JetBrains Mono</span></div>
+    </div>
+  </footer>
+</div>
+
+<script>
+const groups = [
+  {id:'A', name:'قلب الجهاز', en:'Core Components', color:'var(--a)', subcats:[
+    {title:'المكونات الأساسية', items:['CPU','GPU','Motherboard','RAM','PSU','Chipset','BIOS/UEFI Chip','CMOS Battery']},
+    {title:'التخزين', items:['HDD','SSD (SATA/NVMe)','M.2 Drive','eMMC','Optical Drive','Flash Memory Chip','EEPROM','microSD/SD Card','USB Flash Drive','Tape Drive']},
+    {title:'اللوحة الأم وملحقاتها', items:['VRM','Capacitors','Resistors','Inductors','Transistors','Diodes','PCB Traces','PCIe / RAM Slots','Headers','Jumpers','Clock Generator','Super I/O Chip']}
+  ]},
+  {id:'B', name:'التواصل', en:'Connectivity', color:'var(--b)', subcats:[
+    {title:'الشبكات', items:['NIC','Router','Switch','Hub','Modem','Access Point','Antenna','Ethernet Cable','Fiber Optic Cable','SFP Module','Network Bridge','Repeater']},
+    {title:'المنافذ والموصلات', items:['USB (A/C/Micro/Mini)','HDMI','DisplayPort','VGA','DVI','RJ45','Audio Jack 3.5mm','SATA','PCIe Connector','Thunderbolt','Lightning','PS/2','Serial Port','Parallel Port']}
+  ]},
+  {id:'C', name:'الإدخال والإخراج', en:'I/O Devices', color:'var(--c)', subcats:[
+    {title:'أجهزة الإدخال', items:['Keyboard','Mouse','Touchpad','Trackball','Joystick / Gamepad','Scanner','Webcam','Microphone','Barcode Reader','RFID Reader','Fingerprint Scanner','Stylus','Touch Screen Panel']},
+    {title:'أجهزة الإخراج', items:['Monitor','Printer','Speaker','Projector','Plotter','Headphones']},
+    {title:'إكسسوارات الوصول', items:['Braille Display','Eye-tracking Input','Switch Access Device','Adaptive Joystick']}
+  ]},
+  {id:'D', name:'الدعم', en:'Support Systems', color:'var(--d)', subcats:[
+    {title:'التبريد', items:['CPU Fan','Case Fan','Heat Sink','Thermal Paste','Liquid Cooling Pump','Radiator','Heat Pipes','Vapor Chamber','Thermal Pads']},
+    {title:'الطاقة', items:['PSU','Power Cables','UPS','Surge Protector','Battery','Voltage Regulator','AC Adapter','Power Strip']},
+    {title:'إكسسوارات ملحقة', items:['Docking Station','KVM Switch','Cable Management','Laptop Cooling Pad']}
+  ]},
+  {id:'E', name:'المتخصص والمدمج', en:'Specialized / Embedded', color:'var(--e)', subcats:[
+    {title:'شرائح متخصصة', items:['TPM Chip','Secure Enclave','FPGA','ASIC','Microcontroller','DSP','Crypto-processor','Sensor Hub','PLL','ADC/DAC']},
+    {title:'الحساسات', items:['Temperature Sensor','Accelerometer','Gyroscope','Magnetometer','Proximity Sensor','Light Sensor','Pressure Sensor','Humidity Sensor','GPS Module','Heart Rate Sensor']},
+    {title:'قطع الموبايل والمدمج', items:['SoC','Modem Chip (Baseband)','SIM / eSIM','Li-ion / Li-Po Battery','Vibration Motor','Display Driver IC','Touch Controller IC','Camera Module','Wireless Charging Coil','NFC Chip','Antenna Module']},
+    {title:'القطع الصناعية', items:['PLC','HMI Panel','Relay','Actuator','Servo Motor','Encoder','Industrial Sensor','RTU']},
+    {title:'السيارات', items:['ECU','Infotainment System','ADAS Sensors','CAN Bus Controller']}
+  ]},
+  {id:'F', name:'الناشئ والنادر', en:'Emerging & Niche', color:'var(--f)', subcats:[
+    {title:'قطع متقدمة', items:['Quantum Processor','Neuromorphic Chip','Satellite Transceiver','RF Module','Laser Diode','Photodetector','Hardware Security Module','Smart Card Chip']},
+    {title:'الواقع الافتراضي والمعزز', items:['Headset Display','Motion Controllers','Eye Tracking Sensor','Haptic Feedback Module']},
+    {title:'الصوتيات الاحترافية', items:['Sound Card','Audio Interface','Mixer','DAC / Amp']},
+    {title:'الدرونز والروبوتيك', items:['Flight Controller','ESC','Propeller Motor','Gimbal']},
+    {title:'الأمن المادي والمحافظ', items:['Hardware Wallet','Security Token (YubiKey)']},
+    {title:'المنزل الذكي', items:['Zigbee / Z-Wave Hub','Smart Plug','Smart Speaker Hub']},
+    {title:'القابلة للارتداء', items:['Smartwatch Chip','Fitness Band Sensor']},
+    {title:'قطع قديمة / تاريخية', items:['Floppy Disk Drive','Punch Card Reader','CRT Monitor','Dot Matrix Printer']}
+  ]}
+];
+
+const main = document.getElementById('main');
+const legend = document.getElementById('legend');
+const filtersEl = document.getElementById('filters');
+let activeGroup = null;
+let totalItems = 0;
+
+groups.forEach(g => {
+  // legend
+  const li = document.createElement('div');
+  li.className = 'legend-item';
+  li.innerHTML = `<span class="sq" style="background:${g.color}"></span>${g.id} · ${g.name}`;
+  legend.appendChild(li);
+
+  // group section
+  const sec = document.createElement('section');
+  sec.className = 'group';
+  sec.dataset.group = g.id;
+  sec.style.setProperty('--gcolor', g.color);
+
+  let itemCount = 0;
+  g.subcats.forEach(s => itemCount += s.items.length);
+  totalItems += itemCount;
+
+  sec.innerHTML = `
+    <div class="group-head">
+      <div class="group-id">${g.id}</div>
+      <div class="group-titles">
+        <h2>${g.name}</h2>
+        <div class="en">${g.en}</div>
+      </div>
+      <div class="group-meta">${g.subcats.length} تصنيفات · ${itemCount} قطعة</div>
+    </div>
+    ${g.subcats.map(s => `
+      <div class="subcat">
+        <div class="subcat-title">${s.title}</div>
+        <div class="chips">
+          ${s.items.map(it => `<span class="chip">${it}</span>`).join('')}
+        </div>
+      </div>
+    `).join('')}
+  `;
+  main.appendChild(sec);
+});
+
+document.getElementById('vis-count').textContent = totalItems;
+document.querySelectorAll('.count-line b')[1].textContent = totalItems;
+
+// filter pills
+const allPill = document.createElement('button');
+allPill.className = 'pill active';
+allPill.textContent = 'الكل';
+allPill.onclick = () => setGroup(null, allPill);
+filtersEl.appendChild(allPill);
+
+groups.forEach(g => {
+  const p = document.createElement('button');
+  p.className = 'pill';
+  p.textContent = g.id + ' — ' + g.name;
+  p.onclick = () => setGroup(g.id, p, g.color);
+  filtersEl.appendChild(p);
+});
+
+function setGroup(id, btn, color){
+  activeGroup = id;
+  document.querySelectorAll('.pill').forEach(p => {
+    p.classList.remove('active');
+    p.style.background = '';
+    p.style.color = '';
+  });
+  btn.classList.add('active');
+  if(color){ btn.style.background = color.replace('var(','').replace(')',''); }
+  if(id === null){ btn.style.background = '#c9824b'; }
+  applyFilter();
+}
+
+function applyFilter(){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.group').forEach(sec => {
+    const showGroup = activeGroup === null || sec.dataset.group === activeGroup;
+    let groupHasVisible = false;
+    sec.querySelectorAll('.subcat').forEach(sub => {
+      let subHasVisible = false;
+      sub.querySelectorAll('.chip').forEach(chip => {
+        const match = showGroup && (q === '' || chip.textContent.toLowerCase().includes(q));
+        chip.classList.toggle('hide', !match);
+        if(match){ subHasVisible = true; visible++; }
+      });
+      sub.classList.toggle('hide', !subHasVisible);
+      if(subHasVisible) groupHasVisible = true;
+    });
+    sec.classList.toggle('hide', !groupHasVisible);
+  });
+  document.getElementById('vis-count').textContent = visible;
+  document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+}
+
+document.getElementById('search').addEventListener('input', applyFilter);
+</script>
+</body>
+</html>
